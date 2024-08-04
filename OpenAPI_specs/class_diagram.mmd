@@ -1,36 +1,42 @@
 classDiagram
+    ArrayOfMode --> Mode
+    ArrayOfStatusSeverity --> StatusSeverity
+    ArrayOfLine --> Line
+    ArrayOfStopPoint --> StopPoint
+    ArrayOfDisruption --> Disruption
+    ArrayOfPrediction --> Prediction
     Place --> Place
     Place --> AdditionalProperties
+    StopPoint --> Identifier
     StopPoint --> AdditionalProperties
     StopPoint --> LineGroup
-    StopPoint --> Identifier
-    StopPoint --> Place
     StopPoint --> LineModeGroup
+    StopPoint --> Place
     RouteSectionNaptanEntrySequence --> StopPoint
     RouteSection --> RouteSectionNaptanEntrySequence
-    Disruption --> RouteSection
     Disruption --> StopPoint
+    Disruption --> RouteSection
     LineStatus --> ValidityPeriod
     LineStatus --> Disruption
     Line --> Crowding
-    Line --> LineServiceTypeInfo
     Line --> LineStatus
     Line --> Disruption
+    Line --> LineServiceTypeInfo
     Line --> MatchedRoute
     MatchedStop --> Identifier
     StopPointSequence --> MatchedStop
-    RouteSequence --> MatchedStop
     RouteSequence --> StopPointSequence
     RouteSequence --> OrderedRoute
+    RouteSequence --> MatchedStop
     RouteSearchMatch --> LineRouteSection
     RouteSearchMatch --> MatchedStop
     RouteSearchMatch --> MatchedRouteSections
     RouteSearchResponse --> RouteSearchMatch
     StationInterval --> Interval
-    Period --> ServiceFrequency
     Period --> TwentyFourHourClockTime
-    Schedule --> Period
+    Period --> ServiceFrequency
     Schedule --> KnownJourney
+    Schedule --> Period
     TimetableRoute --> StationInterval
     TimetableRoute --> Schedule
     Timetable --> TimetableRoute
@@ -39,18 +45,6 @@ classDiagram
     TimetableResponse --> Timetable
     TimetableResponse --> MatchedStop
     Prediction --> PredictionTiming
-    Crowding --> PassengerFlow
     Crowding --> TrainLoading
+    Crowding --> PassengerFlow
     Identifier --> Crowding
-    LineSpecificServiceType --> LineServiceTypeInfo
-    LineServiceType --> LineSpecificServiceType
-    ArrivalDeparture --> PredictionTiming
-    StopPointsResponse --> StopPoint
-    SearchResponse --> SearchMatch
-    ArrayOfMode --> Mode
-    ArrayOfStatusSeverity --> StatusSeverity
-    ArrayOfLine --> Line
-    ArrayOfStopPoint --> StopPoint
-    ArrayOfDisruption --> Disruption
-    ArrayOfActiveServiceType --> ActiveServiceType
-    ArrayOfPrediction --> Prediction
