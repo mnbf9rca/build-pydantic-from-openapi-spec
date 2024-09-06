@@ -101,7 +101,7 @@ from .ArrayOfActiveServiceTypes import ArrayOfActiveServiceTypes
 from .ArrayOfPlaceCategories import ArrayOfPlaceCategories
 from .ArrayOfPlaces import ArrayOfPlaces
 from .AccidentDetailArray import AccidentDetailArray
-from .Get200ApplicationJsonResponse import Get200ApplicationJsonResponse
+from .ArrayOfLiftDisruptions import ArrayOfLiftDisruptions
 from .ArrayOfRoadCorridors import ArrayOfRoadCorridors
 from .ArrayOfRoadDisruptions import ArrayOfRoadDisruptions
 
@@ -209,7 +209,7 @@ __all__ = [
     ArrayOfPlaceCategories,
     ArrayOfPlaces,
     AccidentDetailArray,
-    Get200ApplicationJsonResponse,
+    ArrayOfLiftDisruptions,
     ArrayOfRoadCorridors,
     ArrayOfRoadDisruptions
 ]

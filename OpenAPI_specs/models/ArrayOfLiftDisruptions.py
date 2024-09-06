@@ -3,7 +3,7 @@ from .LiftDisruption import LiftDisruption
 from typing import List
 
 
-class Get200ApplicationJsonResponse(BaseModel):
+class ArrayOfLiftDisruptions(BaseModel):
     data: List[LiftDisruption] = Field(..., alias='data')
 
     class Config:

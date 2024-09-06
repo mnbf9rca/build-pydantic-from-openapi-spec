@@ -37,9 +37,12 @@ tfl_mappings = {
         "Tfl-Api-Presentation-Entities-PlaceArray-4": "PlaceArray",
         "Tfl-Api-Presentation-Entities-PlaceArray-5": "PlaceArray",
         "Tfl-Api-Presentation-Entities-PlaceArray-6": "PlaceArray",
-        "Tfl-Api-Presentation-Entities-PlaceArray-7": "PlaceArray"
+        "Tfl-Api-Presentation-Entities-PlaceArray-7": "PlaceArray",
     },
-    "Disruptions-Lifts-v2": {"LiftDisruption": "LiftDisruption"},
+    "Lift Disruptions": {
+        "LiftDisruption": "LiftDisruption",
+        "Get200ApplicationJsonResponse": "ArrayOfLiftDisruptions",
+    },
     "Journey": {
         "Tfl": "Tfl.Api.Presentation.Entities.Mode",
         "Tfl-10": "Tfl.Api.Presentation.Entities.Identifier",
@@ -81,11 +84,11 @@ tfl_mappings = {
         "Tfl-7": "Tfl.Api.Presentation.Entities.PassengerFlow",
         "Tfl-8": "Tfl.Api.Presentation.Entities.TrainLoading",
         "Tfl-9": "Tfl.Api.Presentation.Entities.Crowding",
-                "MetaModesGet200ApplicationJsonResponse": "ArrayOfModes",
+        "MetaModesGet200ApplicationJsonResponse": "ArrayOfModes",
         "MetaModesGet200TextJsonResponse": "ArrayOfModes",
         "MetaModesGet200ApplicationXmlResponse": "ArrayOfModes",
         "MetaModesGet200TextXmlResponse": "ArrayOfModes",
-        "Get200ApplicationJsonResponse": "ObjectResponse"
+        "Get200ApplicationJsonResponse": "ObjectResponse",
     },
     "Line": {
         "MetaModesGet200ApplicationJsonResponse": "ArrayOfModes",
@@ -214,7 +217,7 @@ tfl_mappings = {
         "Tfl.Api.Presentation.Entities.PredictionTiming": "Tfl.Api.Presentation.Entities.PredictionTiming",
         "Tfl-Api-Presentation-Entities-PredictionArray-5": "ArrayOfPredictions",
         "Tfl-Api-Presentation-Entities-PredictionArray-6": "ArrayOfPredictions",
-        "Tfl-Api-Presentation-Entities-PredictionArray-7": "ArrayOfPredictions"
+        "Tfl-Api-Presentation-Entities-PredictionArray-7": "ArrayOfPredictions",
     },
     "Place": {
         "System": "System.Object",
@@ -291,7 +294,7 @@ tfl_mappings = {
         "MetaSeveritiesGet200ApplicationJsonResponse": "ArrayOfStatusSeverities",
         "MetaSeveritiesGet200TextJsonResponse": "ArrayOfStatusSeverities",
         "MetaSeveritiesGet200ApplicationXmlResponse": "ArrayOfStatusSeverities",
-        "MetaSeveritiesGet200TextXmlResponse": "ArrayOfStatusSeverities"        
+        "MetaSeveritiesGet200TextXmlResponse": "ArrayOfStatusSeverities",
     },
     "Search": {
         "Tfl": "Tfl.Api.Presentation.Entities.SearchMatch",
@@ -307,7 +310,7 @@ tfl_mappings = {
         "MetaSortsGet200ApplicationJsonResponse": "ArrayOfStrings",
         "MetaSortsGet200TextJsonResponse": "ArrayOfStrings",
         "MetaSortsGet200ApplicationXmlResponse": "ArrayOfStrings",
-        "MetaSortsGet200TextXmlResponse": "ArrayOfStrings"        
+        "MetaSortsGet200TextXmlResponse": "ArrayOfStrings",
     },
     "StopPoint": {
         "System": "System.Object",
@@ -341,7 +344,7 @@ tfl_mappings = {
         "ids-ArrivalsGet200ApplicationJsonResponse": "ArrayOfPredictions",
         "ids-ArrivalsGet200TextJsonResponse": "ArrayOfPredictions",
         "ids-ArrivalsGet200ApplicationXmlResponse": "ArrayOfPredictions",
-        "ids-ArrivalsGet200TextXmlResponse": "ArrayOfPredictions"        
+        "ids-ArrivalsGet200TextXmlResponse": "ArrayOfPredictions",
     },
     "crowding": {},
     "occupancy": {
