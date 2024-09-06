@@ -1,22 +1,21 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from .RouteSectionNaptanEntrySequence import RouteSectionNaptanEntrySequence
+from typing import List
+from typing import Optional
 
-from RouteSectionNaptanEntrySequence import RouteSectionNaptanEntrySequence
 
 class RouteSection(BaseModel):
     id: Optional[str] = Field(None, alias='id')
-    line_id: Optional[str] = Field(None, alias='lineId')
-    route_code: Optional[str] = Field(None, alias='routeCode')
+    lineId: Optional[str] = Field(None, alias='lineId')
+    routeCode: Optional[str] = Field(None, alias='routeCode')
     name: Optional[str] = Field(None, alias='name')
-    line_string: Optional[str] = Field(None, alias='lineString')
+    lineString: Optional[str] = Field(None, alias='lineString')
     direction: Optional[str] = Field(None, alias='direction')
-    origination_name: Optional[str] = Field(None, alias='originationName')
-    destination_name: Optional[str] = Field(None, alias='destinationName')
-    valid_to: Optional[datetime] = Field(None, alias='validTo')
-    valid_from: Optional[datetime] = Field(None, alias='validFrom')
-    route_section_naptan_entry_sequence: Optional[List[RouteSectionNaptanEntrySequence]] = Field(None, alias='routeSectionNaptanEntrySequence')
-    model_config = {"populate_by_name": True}
+    originationName: Optional[str] = Field(None, alias='originationName')
+    destinationName: Optional[str] = Field(None, alias='destinationName')
+    validTo: Optional[str] = Field(None, alias='validTo')
+    validFrom: Optional[str] = Field(None, alias='validFrom')
+    routeSectionNaptanEntrySequence: Optional[List[RouteSectionNaptanEntrySequence]] = Field(None, alias='routeSectionNaptanEntrySequence')
 
-RouteSection.model_rebuild()
+    class Config:
+        from_attributes = True

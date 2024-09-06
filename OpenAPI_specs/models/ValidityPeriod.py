@@ -1,13 +1,11 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from typing import Optional
 
 
 class ValidityPeriod(BaseModel):
-    from_date: Optional[datetime] = Field(None, alias='fromDate')
-    to_date: Optional[datetime] = Field(None, alias='toDate')
-    is_now: Optional[bool] = Field(None, alias='isNow')
-    model_config = {"populate_by_name": True}
+    fromDate: Optional[str] = Field(None, alias='fromDate')
+    toDate: Optional[str] = Field(None, alias='toDate')
+    isNow: Optional[bool] = Field(None, alias='isNow')
 
-ValidityPeriod.model_rebuild()
+    class Config:
+        from_attributes = True

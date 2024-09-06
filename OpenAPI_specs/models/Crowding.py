@@ -1,14 +1,13 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from .PassengerFlow import PassengerFlow
+from .TrainLoading import TrainLoading
+from typing import List
+from typing import Optional
 
-from PassengerFlow import PassengerFlow
-from TrainLoading import TrainLoading
 
 class Crowding(BaseModel):
-    passenger_flows: Optional[List[PassengerFlow]] = Field(None, alias='passengerFlows')
-    train_loadings: Optional[List[TrainLoading]] = Field(None, alias='trainLoadings')
-    model_config = {"populate_by_name": True}
+    passengerFlows: Optional[List[PassengerFlow]] = Field(None, alias='passengerFlows')
+    trainLoadings: Optional[List[TrainLoading]] = Field(None, alias='trainLoadings')
 
-Crowding.model_rebuild()
+    class Config:
+        from_attributes = True

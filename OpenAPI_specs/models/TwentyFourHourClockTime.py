@@ -1,12 +1,10 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from typing import Optional
 
 
 class TwentyFourHourClockTime(BaseModel):
     hour: Optional[str] = Field(None, alias='hour')
     minute: Optional[str] = Field(None, alias='minute')
-    model_config = {"populate_by_name": True}
 
-TwentyFourHourClockTime.model_rebuild()
+    class Config:
+        from_attributes = True

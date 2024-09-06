@@ -1,12 +1,11 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from .DisambiguationOption import DisambiguationOption
+from typing import List
+from typing import Optional
 
-from DisambiguationOption import DisambiguationOption
 
 class Disambiguation(BaseModel):
-    disambiguation_options: Optional[List[DisambiguationOption]] = Field(None, alias='disambiguationOptions')
-    model_config = {"populate_by_name": True}
+    disambiguationOptions: Optional[List[DisambiguationOption]] = Field(None, alias='disambiguationOptions')
 
-Disambiguation.model_rebuild()
+    class Config:
+        from_attributes = True

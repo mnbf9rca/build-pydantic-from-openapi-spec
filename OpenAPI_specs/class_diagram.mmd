@@ -1,50 +1,101 @@
 classDiagram
-    ArrayOfMode --> Mode
-    ArrayOfStatusSeverity --> StatusSeverity
-    ArrayOfLine --> Line
-    ArrayOfStopPoint --> StopPoint
-    ArrayOfDisruption --> Disruption
-    ArrayOfPrediction --> Prediction
     Place --> Place
     Place --> AdditionalProperties
-    StopPoint --> Identifier
-    StopPoint --> AdditionalProperties
     StopPoint --> LineGroup
     StopPoint --> LineModeGroup
+    StopPoint --> Identifier
     StopPoint --> Place
+    StopPoint --> AdditionalProperties
     RouteSectionNaptanEntrySequence --> StopPoint
     RouteSection --> RouteSectionNaptanEntrySequence
-    Disruption --> StopPoint
     Disruption --> RouteSection
-    LineStatus --> ValidityPeriod
+    Disruption --> StopPoint
     LineStatus --> Disruption
-    Line --> Crowding
-    Line --> LineStatus
+    LineStatus --> ValidityPeriod
     Line --> Disruption
-    Line --> LineServiceTypeInfo
+    Line --> Crowding
     Line --> MatchedRoute
+    Line --> LineStatus
+    Line --> LineServiceTypeInfo
     MatchedStop --> Identifier
     StopPointSequence --> MatchedStop
+    RouteSequence --> MatchedStop
     RouteSequence --> StopPointSequence
     RouteSequence --> OrderedRoute
-    RouteSequence --> MatchedStop
     RouteSearchMatch --> LineRouteSection
-    RouteSearchMatch --> MatchedStop
     RouteSearchMatch --> MatchedRouteSections
+    RouteSearchMatch --> MatchedStop
     RouteSearchResponse --> RouteSearchMatch
     StationInterval --> Interval
-    Period --> TwentyFourHourClockTime
     Period --> ServiceFrequency
+    Period --> TwentyFourHourClockTime
     Schedule --> KnownJourney
     Schedule --> Period
-    TimetableRoute --> StationInterval
     TimetableRoute --> Schedule
+    TimetableRoute --> StationInterval
     Timetable --> TimetableRoute
     Disambiguation --> DisambiguationOption
-    TimetableResponse --> Disambiguation
     TimetableResponse --> Timetable
+    TimetableResponse --> Disambiguation
     TimetableResponse --> MatchedStop
     Prediction --> PredictionTiming
-    Crowding --> TrainLoading
     Crowding --> PassengerFlow
+    Crowding --> TrainLoading
     Identifier --> Crowding
+    CarParkOccupancy --> Bay
+    SearchResponse --> SearchMatch
+    LineSpecificServiceType --> LineServiceTypeInfo
+    LineServiceType --> LineSpecificServiceType
+    ArrivalDeparture --> PredictionTiming
+    StopPointsResponse --> StopPoint
+    Path --> JpElevation
+    Path --> Identifier
+    RouteOption --> Identifier
+    Leg --> Disruption
+    Leg --> RouteOption
+    Leg --> Obstacle
+    Leg --> Path
+    Leg --> PlannedWork
+    Leg --> Identifier
+    Leg --> Point
+    Leg --> Instruction
+    FareTap --> FareTapDetails
+    Fare --> FareTap
+    JourneyFare --> Fare
+    JourneyFare --> FareCaveat
+    Journey --> Leg
+    Journey --> JourneyFare
+    InstructionStep --> PathAttribute
+    TimeAdjustments --> TimeAdjustment
+    SearchCriteria --> TimeAdjustments
+    Instruction --> InstructionStep
+    ItineraryResult --> Journey
+    ItineraryResult --> Line
+    ItineraryResult --> JourneyPlannerCycleHireDockingStationData
+    ItineraryResult --> SearchCriteria
+    ItineraryResult --> JourneyVector
+    AccidentDetail --> Vehicle
+    AccidentDetail --> Casualty
+    DbGeography --> DbGeographyWellKnownValue
+    Street --> StreetSegment
+    RoadDisruptionLine --> DbGeography
+    RoadDisruptionImpactArea --> DbGeography
+    RoadDisruption --> Street
+    RoadDisruption --> RoadDisruptionLine
+    RoadDisruption --> RoadDisruptionImpactArea
+    RoadDisruption --> RoadProject
+    RoadDisruption --> DbGeography
+    RoadDisruption --> RoadDisruptionSchedule
+    ArrayOfModes --> Mode
+    ArrayOfStatusSeverities --> StatusSeverity
+    ArrayOfLines --> Line
+    ArrayOfStopPoints --> StopPoint
+    ArrayOfDisruptions --> Disruption
+    ArrayOfPredictions --> Prediction
+    ArrayOfActiveServiceTypes --> ActiveServiceType
+    ArrayOfPlaceCategories --> PlaceCategory
+    ArrayOfPlaces --> Place
+    AccidentDetailArray --> AccidentDetail
+    Get200ApplicationJsonResponse --> LiftDisruption
+    ArrayOfRoadCorridors --> RoadCorridor
+    ArrayOfRoadDisruptions --> RoadDisruption

@@ -1,12 +1,11 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from typing import List
+from typing import Optional
 
 
 class LineModeGroup(BaseModel):
-    mode_name: Optional[str] = Field(None, alias='modeName')
-    line_identifier: Optional[List[str]] = Field(None, alias='lineIdentifier')
-    model_config = {"populate_by_name": True}
+    modeName: Optional[str] = Field(None, alias='modeName')
+    lineIdentifier: Optional[List[str]] = Field(None, alias='lineIdentifier')
 
-LineModeGroup.model_rebuild()
+    class Config:
+        from_attributes = True

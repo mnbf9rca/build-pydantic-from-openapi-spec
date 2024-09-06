@@ -1,12 +1,10 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from typing import Optional
 
 
 class Interval(BaseModel):
-    stop_id: Optional[str] = Field(None, alias='stopId')
-    time_to_arrival: Optional[float] = Field(None, alias='timeToArrival')
-    model_config = {"populate_by_name": True}
+    stopId: Optional[str] = Field(None, alias='stopId')
+    timeToArrival: Optional[float] = Field(None, alias='timeToArrival')
 
-Interval.model_rebuild()
+    class Config:
+        from_attributes = True

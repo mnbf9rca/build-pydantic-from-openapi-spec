@@ -1,17 +1,15 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Union, ForwardRef, Literal
-from datetime import datetime
-from enum import Enum
+from typing import Optional
 
 
 class LineRouteSection(BaseModel):
-    route_id: Optional[int] = Field(None, alias='routeId')
+    routeId: Optional[int] = Field(None, alias='routeId')
     direction: Optional[str] = Field(None, alias='direction')
     destination: Optional[str] = Field(None, alias='destination')
-    from_station: Optional[str] = Field(None, alias='fromStation')
-    to_station: Optional[str] = Field(None, alias='toStation')
-    service_type: Optional[str] = Field(None, alias='serviceType')
-    vehicle_destination_text: Optional[str] = Field(None, alias='vehicleDestinationText')
-    model_config = {"populate_by_name": True}
+    fromStation: Optional[str] = Field(None, alias='fromStation')
+    toStation: Optional[str] = Field(None, alias='toStation')
+    serviceType: Optional[str] = Field(None, alias='serviceType')
+    vehicleDestinationText: Optional[str] = Field(None, alias='vehicleDestinationText')
 
-LineRouteSection.model_rebuild()
+    class Config:
+        from_attributes = True
