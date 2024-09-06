@@ -3,6 +3,7 @@ import os
 import logging
 import re
 import keyword
+from enum import Enum
 from typing import Dict, Any, Optional, Union, Type, List, Set, get_origin, get_args, Literal, ForwardRef, Tuple
 from pydantic import BaseModel, create_model, Field
 from datetime import datetime
@@ -27,16 +28,16 @@ tfl_mappings = {
     },
     "AirQuality": {"System.Object": "Tfl.Api.Presentation.Entities.LondonAirForecast"},
     "BikePoint": {
-        "Tfl-Api-Presentation-Entities-PlaceArray": "Tfl-Api-Presentation-Entities-PlaceArray",
-        "Tfl-Api-Presentation-Entities-PlaceArray-1": "Tfl-Api-Presentation-Entities-PlaceArray-1",
-        "Tfl-Api-Presentation-Entities-PlaceArray-2": "Tfl-Api-Presentation-Entities-PlaceArray-2",
-        "Tfl-Api-Presentation-Entities-PlaceArray-3": "Tfl-Api-Presentation-Entities-PlaceArray-3",
-        "Tfl-Api-Presentation-Entities-PlaceArray-4": "Tfl-Api-Presentation-Entities-PlaceArray-4",
-        "Tfl-Api-Presentation-Entities-PlaceArray-5": "Tfl-Api-Presentation-Entities-PlaceArray-5",
-        "Tfl-Api-Presentation-Entities-PlaceArray-6": "Tfl-Api-Presentation-Entities-PlaceArray-6",
-        "Tfl-Api-Presentation-Entities-PlaceArray-7": "Tfl-Api-Presentation-Entities-PlaceArray-7",
-        "Tfl.Api.Presentation.Entities.AdditionalProperties": "Tfl.Api.Presentation.Entities.AdditionalProperties",
+        "Tfl-Api-Presentation-Entities-PlaceArray": "PlaceArray",
         "Tfl.Api.Presentation.Entities.Place": "Tfl.Api.Presentation.Entities.Place",
+        "Tfl.Api.Presentation.Entities.AdditionalProperties": "Tfl.Api.Presentation.Entities.AdditionalProperties",
+        "Tfl-Api-Presentation-Entities-PlaceArray-1": "PlaceArray",
+        "Tfl-Api-Presentation-Entities-PlaceArray-2": "PlaceArray",
+        "Tfl-Api-Presentation-Entities-PlaceArray-3": "PlaceArray",
+        "Tfl-Api-Presentation-Entities-PlaceArray-4": "PlaceArray",
+        "Tfl-Api-Presentation-Entities-PlaceArray-5": "PlaceArray",
+        "Tfl-Api-Presentation-Entities-PlaceArray-6": "PlaceArray",
+        "Tfl-Api-Presentation-Entities-PlaceArray-7": "PlaceArray"
     },
     "Disruptions-Lifts-v2": {"LiftDisruption": "LiftDisruption"},
     "Journey": {
@@ -80,8 +81,86 @@ tfl_mappings = {
         "Tfl-7": "Tfl.Api.Presentation.Entities.PassengerFlow",
         "Tfl-8": "Tfl.Api.Presentation.Entities.TrainLoading",
         "Tfl-9": "Tfl.Api.Presentation.Entities.Crowding",
+                "MetaModesGet200ApplicationJsonResponse": "ArrayOfModes",
+        "MetaModesGet200TextJsonResponse": "ArrayOfModes",
+        "MetaModesGet200ApplicationXmlResponse": "ArrayOfModes",
+        "MetaModesGet200TextXmlResponse": "ArrayOfModes",
+        "Get200ApplicationJsonResponse": "ObjectResponse"
     },
     "Line": {
+        "MetaModesGet200ApplicationJsonResponse": "ArrayOfModes",
+        "MetaModesGet200TextJsonResponse": "ArrayOfModes",
+        "MetaModesGet200ApplicationXmlResponse": "ArrayOfModes",
+        "MetaModesGet200TextXmlResponse": "ArrayOfModes",
+        "Get200ApplicationJsonResponse": "ObjectResponse",
+        "MetaSeverityGet200ApplicationJsonResponse": "ArrayOfStatusSeverities",
+        "MetaSeverityGet200TextJsonResponse": "ArrayOfStatusSeverities",
+        "MetaSeverityGet200ApplicationXmlResponse": "ArrayOfStatusSeverities",
+        "MetaSeverityGet200TextXmlResponse": "ArrayOfStatusSeverities",
+        "MetaDisruptionCategoriesGet200ApplicationJsonResponse": "ArrayOfStrings",
+        "MetaDisruptionCategoriesGet200TextJsonResponse": "ArrayOfStrings",
+        "MetaDisruptionCategoriesGet200ApplicationXmlResponse": "ArrayOfStrings",
+        "MetaDisruptionCategoriesGet200TextXmlResponse": "ArrayOfStrings",
+        "MetaServiceTypesGet200ApplicationJsonResponse": "ArrayOfStrings",
+        "MetaServiceTypesGet200TextJsonResponse": "ArrayOfStrings",
+        "MetaServiceTypesGet200ApplicationXmlResponse": "ArrayOfStrings",
+        "MetaServiceTypesGet200TextXmlResponse": "ArrayOfStrings",
+        "ids-Get200ApplicationJsonResponse": "ArrayOfLines",
+        "ids-Get200TextJsonResponse": "ArrayOfLines",
+        "ids-Get200ApplicationXmlResponse": "ArrayOfLines",
+        "ids-Get200TextXmlResponse": "ArrayOfLines",
+        "Mode-modes-Get200ApplicationJsonResponse": "ArrayOfLines",
+        "Mode-modes-Get200TextJsonResponse": "ArrayOfLines",
+        "Mode-modes-Get200ApplicationXmlResponse": "ArrayOfLines",
+        "Mode-modes-Get200TextXmlResponse": "ArrayOfLines",
+        "RouteGet200ApplicationJsonResponse": "ArrayOfLines",
+        "RouteGet200TextJsonResponse": "ArrayOfLines",
+        "RouteGet200ApplicationXmlResponse": "ArrayOfLines",
+        "RouteGet200TextXmlResponse": "ArrayOfLines",
+        "ids-RouteGet200ApplicationJsonResponse": "ArrayOfLines",
+        "ids-RouteGet200TextJsonResponse": "ArrayOfLines",
+        "ids-RouteGet200ApplicationXmlResponse": "ArrayOfLines",
+        "ids-RouteGet200TextXmlResponse": "ArrayOfLines",
+        "Mode-modes-RouteGet200ApplicationJsonResponse": "ArrayOfLines",
+        "Mode-modes-RouteGet200TextJsonResponse": "ArrayOfLines",
+        "Mode-modes-RouteGet200ApplicationXmlResponse": "ArrayOfLines",
+        "Mode-modes-RouteGet200TextXmlResponse": "ArrayOfLines",
+        "ids-Status-startDate-To-endDate-Get200ApplicationJsonResponse": "ArrayOfLines",
+        "ids-Status-startDate-To-endDate-Get200TextJsonResponse": "ArrayOfLines",
+        "ids-Status-startDate-To-endDate-Get200ApplicationXmlResponse": "ArrayOfLines",
+        "ids-Status-startDate-To-endDate-Get200TextXmlResponse": "ArrayOfLines",
+        "ids-StatusGet200ApplicationJsonResponse": "ArrayOfLines",
+        "ids-StatusGet200TextJsonResponse": "ArrayOfLines",
+        "ids-StatusGet200ApplicationXmlResponse": "ArrayOfLines",
+        "ids-StatusGet200TextXmlResponse": "ArrayOfLines",
+        "Status-severity-Get200ApplicationJsonResponse": "ArrayOfLines",
+        "Status-severity-Get200TextJsonResponse": "ArrayOfLines",
+        "Status-severity-Get200ApplicationXmlResponse": "ArrayOfLines",
+        "Status-severity-Get200TextXmlResponse": "ArrayOfLines",
+        "Mode-modes-StatusGet200ApplicationJsonResponse": "ArrayOfLines",
+        "Mode-modes-StatusGet200TextJsonResponse": "ArrayOfLines",
+        "Mode-modes-StatusGet200ApplicationXmlResponse": "ArrayOfLines",
+        "Mode-modes-StatusGet200TextXmlResponse": "ArrayOfLines",
+        "id-StopPointsGet200ApplicationJsonResponse": "ArrayOfStopPoints",
+        "id-StopPointsGet200TextJsonResponse": "ArrayOfStopPoints",
+        "id-StopPointsGet200ApplicationXmlResponse": "ArrayOfStopPoints",
+        "id-StopPointsGet200TextXmlResponse": "ArrayOfStopPoints",
+        "ids-DisruptionGet200ApplicationJsonResponse": "ArrayOfDisruptions",
+        "ids-DisruptionGet200TextJsonResponse": "ArrayOfDisruptions",
+        "ids-DisruptionGet200ApplicationXmlResponse": "ArrayOfDisruptions",
+        "ids-DisruptionGet200TextXmlResponse": "ArrayOfDisruptions",
+        "Mode-modes-DisruptionGet200ApplicationJsonResponse": "ArrayOfDisruptions",
+        "Mode-modes-DisruptionGet200TextJsonResponse": "ArrayOfDisruptions",
+        "Mode-modes-DisruptionGet200ApplicationXmlResponse": "ArrayOfDisruptions",
+        "Mode-modes-DisruptionGet200TextXmlResponse": "ArrayOfDisruptions",
+        "ids-Arrivals-stopPointId-Get200ApplicationJsonResponse": "ArrayOfPredictions",
+        "ids-Arrivals-stopPointId-Get200TextJsonResponse": "ArrayOfPredictions",
+        "ids-Arrivals-stopPointId-Get200ApplicationXmlResponse": "ArrayOfPredictions",
+        "ids-Arrivals-stopPointId-Get200TextXmlResponse": "ArrayOfPredictions",
+        "ids-ArrivalsGet200ApplicationJsonResponse": "ArrayOfPredictions",
+        "ids-ArrivalsGet200TextJsonResponse": "ArrayOfPredictions",
+        "ids-ArrivalsGet200ApplicationXmlResponse": "ArrayOfPredictions",
+        "ids-ArrivalsGet200TextXmlResponse": "ArrayOfPredictions",
         "Tfl": "Tfl.Api.Presentation.Entities.Mode",
         "Tfl-10": "Tfl.Api.Presentation.Entities.Place",
         "Tfl-11": "Tfl.Api.Presentation.Entities.StopPoint",
@@ -125,20 +204,45 @@ tfl_mappings = {
         "Tfl-9": "Tfl.Api.Presentation.Entities.AdditionalProperties",
     },
     "Mode": {
-        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray": "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray",
-        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-1": "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-1",
-        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-2": "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-2",
-        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-3": "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-3",
-        "Tfl-Api-Presentation-Entities-PredictionArray-4": "Tfl-Api-Presentation-Entities-PredictionArray-4",
-        "Tfl-Api-Presentation-Entities-PredictionArray-5": "Tfl-Api-Presentation-Entities-PredictionArray-5",
-        "Tfl-Api-Presentation-Entities-PredictionArray-6": "Tfl-Api-Presentation-Entities-PredictionArray-6",
-        "Tfl-Api-Presentation-Entities-PredictionArray-7": "Tfl-Api-Presentation-Entities-PredictionArray-7",
+        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray": "ArrayOfActiveServiceTypes",
         "Tfl.Api.Presentation.Entities.ActiveServiceType": "Tfl.Api.Presentation.Entities.ActiveServiceType",
+        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-1": "ArrayOfActiveServiceTypes",
+        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-2": "ArrayOfActiveServiceTypes",
+        "Tfl-Api-Presentation-Entities-ActiveServiceTypeArray-3": "ArrayOfActiveServiceTypes",
+        "Tfl-Api-Presentation-Entities-PredictionArray-4": "ArrayOfPredictions",
         "Tfl.Api.Presentation.Entities.Prediction": "Tfl.Api.Presentation.Entities.Prediction",
         "Tfl.Api.Presentation.Entities.PredictionTiming": "Tfl.Api.Presentation.Entities.PredictionTiming",
+        "Tfl-Api-Presentation-Entities-PredictionArray-5": "ArrayOfPredictions",
+        "Tfl-Api-Presentation-Entities-PredictionArray-6": "ArrayOfPredictions",
+        "Tfl-Api-Presentation-Entities-PredictionArray-7": "ArrayOfPredictions"
     },
     "Place": {
         "System": "System.Object",
+        "MetaCategoriesGet200ApplicationJsonResponse": "ArrayOfPlaceCategories",
+        "MetaCategoriesGet200TextJsonResponse": "ArrayOfPlaceCategories",
+        "MetaCategoriesGet200ApplicationXmlResponse": "ArrayOfPlaceCategories",
+        "MetaCategoriesGet200TextXmlResponse": "ArrayOfPlaceCategories",
+        "Get200ApplicationJsonResponse": "ObjectResponse",
+        "MetaPlaceTypesGet200ApplicationJsonResponse": "ArrayOfPlaceCategories",
+        "MetaPlaceTypesGet200TextJsonResponse": "ArrayOfPlaceCategories",
+        "MetaPlaceTypesGet200ApplicationXmlResponse": "ArrayOfPlaceCategories",
+        "MetaPlaceTypesGet200TextXmlResponse": "ArrayOfPlaceCategories",
+        "Type-types-Get200ApplicationJsonResponse": "ArrayOfPlaces",
+        "Type-types-Get200TextJsonResponse": "ArrayOfPlaces",
+        "Type-types-Get200ApplicationXmlResponse": "ArrayOfPlaces",
+        "Type-types-Get200TextXmlResponse": "ArrayOfPlaces",
+        "id-Get200ApplicationJsonResponse": "ArrayOfPlaces",
+        "id-Get200TextJsonResponse": "ArrayOfPlaces",
+        "id-Get200ApplicationXmlResponse": "ArrayOfPlaces",
+        "id-Get200TextXmlResponse": "ArrayOfPlaces",
+        "Get200ApplicationJsonResponse-1": "ArrayOfStopPoints",
+        "Get200TextJsonResponse": "ArrayOfStopPoints",
+        "Get200ApplicationXmlResponse": "ArrayOfStopPoints",
+        "Get200TextXmlResponse": "ArrayOfStopPoints",
+        "SearchGet200ApplicationJsonResponse": "ArrayOfPlaces",
+        "SearchGet200TextJsonResponse": "ArrayOfPlaces",
+        "SearchGet200ApplicationXmlResponse": "ArrayOfPlaces",
+        "SearchGet200TextXmlResponse": "ArrayOfPlaces",
         "Tfl": "Tfl.Api.Presentation.Entities.PlaceCategory",
         "Tfl-10": "Tfl.Api.Presentation.Entities.StopPoint",
         "Tfl-2": "Tfl.Api.Presentation.Entities.AdditionalProperties",
@@ -163,10 +267,47 @@ tfl_mappings = {
         "Tfl-7": "Tfl.Api.Presentation.Entities.RoadDisruptionSchedule",
         "Tfl-8": "Tfl.Api.Presentation.Entities.RoadDisruption",
         "Tfl-9": "Tfl.Api.Presentation.Entities.StatusSeverity",
+        "Get200ApplicationJsonResponse": "ArrayOfRoadCorridors",
+        "Get200TextJsonResponse": "ArrayOfRoadCorridors",
+        "Get200ApplicationXmlResponse": "ArrayOfRoadCorridors",
+        "Get200TextXmlResponse": "ArrayOfRoadCorridors",
+        "ids-Get200ApplicationJsonResponse": "ArrayOfRoadCorridors",
+        "ids-Get200TextJsonResponse": "ArrayOfRoadCorridors",
+        "ids-Get200ApplicationXmlResponse": "ArrayOfRoadCorridors",
+        "ids-Get200TextXmlResponse": "ArrayOfRoadCorridors",
+        "ids-StatusGet200ApplicationJsonResponse": "ArrayOfRoadCorridors",
+        "ids-StatusGet200TextJsonResponse": "ArrayOfRoadCorridors",
+        "ids-StatusGet200ApplicationXmlResponse": "ArrayOfRoadCorridors",
+        "ids-StatusGet200TextXmlResponse": "ArrayOfRoadCorridors",
+        "ids-DisruptionGet200ApplicationJsonResponse": "ArrayOfRoadDisruptions",
+        "ids-DisruptionGet200TextJsonResponse": "ArrayOfRoadDisruptions",
+        "ids-DisruptionGet200ApplicationXmlResponse": "ArrayOfRoadDisruptions",
+        "ids-DisruptionGet200TextXmlResponse": "ArrayOfRoadDisruptions",
+        "ids-DisruptionGet200ApplicationGeo-jsonResponse": "ArrayOfRoadDisruptions",
+        "MetaCategoriesGet200ApplicationJsonResponse": "ArrayOfStrings",
+        "MetaCategoriesGet200TextJsonResponse": "ArrayOfStrings",
+        "MetaCategoriesGet200ApplicationXmlResponse": "ArrayOfStrings",
+        "MetaCategoriesGet200TextXmlResponse": "ArrayOfStrings",
+        "MetaSeveritiesGet200ApplicationJsonResponse": "ArrayOfStatusSeverities",
+        "MetaSeveritiesGet200TextJsonResponse": "ArrayOfStatusSeverities",
+        "MetaSeveritiesGet200ApplicationXmlResponse": "ArrayOfStatusSeverities",
+        "MetaSeveritiesGet200TextXmlResponse": "ArrayOfStatusSeverities"        
     },
     "Search": {
         "Tfl": "Tfl.Api.Presentation.Entities.SearchMatch",
         "Tfl-2": "Tfl.Api.Presentation.Entities.SearchResponse",
+        "MetaSearchProvidersGet200ApplicationJsonResponse": "ArrayOfStrings",
+        "MetaSearchProvidersGet200TextJsonResponse": "ArrayOfStrings",
+        "MetaSearchProvidersGet200ApplicationXmlResponse": "ArrayOfStrings",
+        "MetaSearchProvidersGet200TextXmlResponse": "ArrayOfStrings",
+        "MetaCategoriesGet200ApplicationJsonResponse": "ArrayOfStrings",
+        "MetaCategoriesGet200TextJsonResponse": "ArrayOfStrings",
+        "MetaCategoriesGet200ApplicationXmlResponse": "ArrayOfStrings",
+        "MetaCategoriesGet200TextXmlResponse": "ArrayOfStrings",
+        "MetaSortsGet200ApplicationJsonResponse": "ArrayOfStrings",
+        "MetaSortsGet200TextJsonResponse": "ArrayOfStrings",
+        "MetaSortsGet200ApplicationXmlResponse": "ArrayOfStrings",
+        "MetaSortsGet200TextXmlResponse": "ArrayOfStrings"        
     },
     "StopPoint": {
         "System": "System.Object",
@@ -197,6 +338,10 @@ tfl_mappings = {
         "Tfl": "Tfl.Api.Presentation.Entities.PredictionTiming",
         "Tfl-2": "Tfl.Api.Presentation.Entities.Prediction",
         "Tfl-3": "Tfl.Api.Presentation.Entities.VehicleMatch",
+        "ids-ArrivalsGet200ApplicationJsonResponse": "ArrayOfPredictions",
+        "ids-ArrivalsGet200TextJsonResponse": "ArrayOfPredictions",
+        "ids-ArrivalsGet200ApplicationXmlResponse": "ArrayOfPredictions",
+        "ids-ArrivalsGet200TextXmlResponse": "ArrayOfPredictions"        
     },
     "crowding": {},
     "occupancy": {
@@ -208,383 +353,492 @@ tfl_mappings = {
 }
 
 
-# Function to load all OpenAPI specifications from the specified folder
-def load_openapi_specs(folder_path: str) -> List[Dict[str, Any]]:
-    specs = []
-    for file_name in os.listdir(folder_path):
-        if file_name.endswith(".json"):
-            with open(os.path.join(folder_path, file_name), "r") as file:
-                specs.append(json.load(file))
-                logging.info(f"Loaded {file_name}")
-    return specs
+# Helper functions
+def sanitize_name(name: str) -> str:
+    """
+    Sanitize class names or field names to ensure they are valid Python identifiers.
+    1. Replace invalid characters (like hyphens) with underscores.
+    2. Extract the portion after the last underscore for more concise names.
+    3. Prepend 'Model_' if the name starts with a number or is a Python keyword.
+    """
+    # Replace invalid characters (like hyphens) with underscores
+    sanitized = re.sub(r"[^a-zA-Z0-9_]", "_", name)
+
+    # Extract the portion after the last underscore for concise names
+    sanitized = sanitized.split("_")[-1]
+
+    # Always prepend 'Model_' to ensure names are valid and don't conflict with Python keywords
+    if sanitized[0].isdigit() or keyword.iskeyword(sanitized):
+        sanitized = f"Model_{sanitized}"
+
+    return sanitized
 
 
-def get_api_name(spec: Dict[str, Any]) -> str:
-    return spec["info"]["title"]
+def update_refs(obj: Any, entity_mapping: Dict[str, str]):
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if key == "$ref" and value.split("/")[-1] in entity_mapping:
+                obj[key] = value.replace(value.split("/")[-1], entity_mapping[value.split("/")[-1]])
+            else:
+                update_refs(value, entity_mapping)
+    elif isinstance(obj, list):
+        for item in obj:
+            update_refs(item, entity_mapping)
 
 
-def rename_entities_and_update_references(spec: Dict[str, Any], api_name: str, pydantic_names: Dict[str, str]) -> None:
+# Update entities and references
+def update_entities(spec: Dict[str, Any], api_name: str, pydantic_names: Dict[str, str]) -> None:
     if api_name not in tfl_mappings:
         return
 
     entity_mapping = tfl_mappings[api_name]
     components = spec.get("components", {}).get("schemas", {})
 
-    # Rename entities
-    for old_name, new_name in entity_mapping.items():
+    # Sanitize old and new names to match how they will be used in the models
+    sanitized_entity_mapping = {old_name: sanitize_name(new_name) for old_name, new_name in entity_mapping.items()}
+
+    # Rename entities in the schema components
+    for old_name, new_name in sanitized_entity_mapping.items():
         if old_name in components:
             components[new_name] = components.pop(old_name)
-            pydantic_names[old_name] = sanitize_class_name(new_name.split(".")[-1])
+            pydantic_names[old_name] = new_name
 
-    # Recursively update references
-    update_references_recursive(spec, entity_mapping)
-
-
-def update_references_recursive(obj: Any, entity_mapping: Dict[str, str]):
-    if isinstance(obj, dict):
-        for key, value in obj.items():
-            if key == "$ref" and isinstance(value, str):
-                ref_name = value.split("/")[-1]
-                if ref_name in entity_mapping:
-                    new_name = entity_mapping[ref_name]
-                    obj[key] = value.replace(ref_name, new_name)
-                    logging.info(f"Updated reference: {value} -> {obj[key]}")
-            else:
-                update_references_recursive(value, entity_mapping)
-    elif isinstance(obj, list):
-        for item in obj:
-            update_references_recursive(item, entity_mapping)
+    # Update references recursively in the spec
+    update_refs(spec, sanitized_entity_mapping)
 
 
-# Function to sanitize class names by replacing hyphens and spaces with underscores
-def sanitize_class_name(name: str) -> str:
-    return name.replace("-", "_").replace(" ", "_")
+def create_enum_class(enum_name: str, enum_values: List[Any]) -> Type[Enum]:
+    """Dynamically create a Pydantic Enum class for the given enum values."""
+
+    def clean_enum_name(value: str) -> str:
+        # Replace spaces and special characters with underscores and capitalize all letters
+        return re.sub(r"\W|^(?=\d)", "_", value).strip("_").replace("-", "_").upper()
+
+    # Create a dictionary with cleaned enum names as keys and the original values as values
+    enum_dict = {clean_enum_name(str(v)): v for v in enum_values}
+
+    # Dynamically create the Enum class
+    return Enum(enum_name, enum_dict)
 
 
-# Function to map OpenAPI types to Python types
-def map_openapi_type(
-    field_spec: Dict[str, Any],
-    components: Dict[str, Any],
-    models: Dict[str, Type[BaseModel]],
+def map_type(
+    field_spec: Dict[str, Any], field_name: str, components: Dict[str, Any], models: Dict[str, Type[BaseModel]]
 ) -> Any:
     if "$ref" in field_spec:
-        ref = field_spec["$ref"]
-        ref_name = ref.split("/")[-1]
-        sanitized_ref_name = sanitize_class_name(ref_name.split(".")[-1])
-        if sanitized_ref_name in models:
-            logging.info(f"Reusing existing model: {sanitized_ref_name}")
-            return models[sanitized_ref_name]
-        logging.info(f"Forward reference found: {ref_name}")
-        return sanitized_ref_name  # Return the class name as a forward reference
+        # Handle references
+        return sanitize_name(field_spec["$ref"].split("/")[-1])
 
     openapi_type = field_spec.get("type", "Any")
-    openapi_format = field_spec.get("format", None)
 
+    # Handle enums with mixed types
     if "enum" in field_spec:
-        enum_values = tuple(field_spec["enum"])
-        return Literal[enum_values]  # noqa: F821
+        enum_values = field_spec["enum"]
+        # Capitalize just the first letter of the field name, leave the rest as is
+        cap_field_name = field_name[0].upper() + field_name[1:]
+        enum_name = f"{cap_field_name}Enum"
+        # Dynamically create an enum class and return it
+        return create_enum_class(enum_name, enum_values)
 
-    type_mapping = {
-        "string": {None: str, "date-time": datetime},
-        "integer": {
-            None: int,
-            "int32": int,
-            "int64": int,  # Python's int can handle 64-bit integers
-        },
-        "number": {None: float, "double": float},
-        "boolean": {None: bool},
-        "array": {None: lambda: List[map_openapi_type(field_spec["items"], components, models)]},
-        "object": {None: dict},
-    }
-
-    return type_mapping.get(openapi_type, {}).get(openapi_format, Any)
-
-
-# Function to identify and remove duplicate schemas, retaining the preferred names, and update references accordingly
-def remove_duplicate_schemas(components: Dict[str, Any]) -> (Dict[str, Any], Dict[str, str]):
-    resolved = {}
-    ref_map = {}
-    schema_to_name = {}
-
-    def process_schema(name: str, schema: Dict[str, Any]):
-        schema_key = json.dumps(schema, sort_keys=True)
-        if schema_key in schema_to_name:
-            preferred_name = schema_to_name[schema_key]
-            original_preferred_name = preferred_name
-            if name.startswith("Tfl.") or len(name) > 6:
-                ref_map[preferred_name] = name
-                preferred_name = name
-            ref_map[name] = preferred_name
-            logging.info(f"Duplicate schema found: {name} -> {original_preferred_name} (using {preferred_name})")
-
-            # Update resolved dictionary to replace the old schema with the preferred one
-            resolved[preferred_name] = schema
-            if original_preferred_name in resolved:
-                del resolved[original_preferred_name]
+    # Handle arrays
+    if openapi_type == "array":
+        # Ensure that 'items' exist for arrays, fallback to Any if missing
+        items_spec = field_spec.get("items", {})
+        if items_spec:
+            return List[map_type(items_spec, field_name, components, models)]
         else:
-            schema_to_name[schema_key] = name
-            resolved[name] = schema
+            logging.warning(f"'items' missing in array definition, using Any")
+            return List[Any]
 
-    for name, schema in components.items():
-        process_schema(name, schema)
-
-    final_ref_map = {k: ref_map.get(v, v) for k, v in ref_map.items()}
-
-    # Update references in all components
-    resolved = update_references([{"components": {"schemas": resolved}}], final_ref_map)[0]["components"]["schemas"]
-
-    return resolved, final_ref_map
-
-
-# Function to update references in the specifications to point to the retained schemas
-def update_references(specs: List[Dict[str, Any]], ref_map: Dict[str, str]) -> List[Dict[str, Any]]:
-    for spec in specs:
-        update_references_recursive(spec, ref_map)
-    return specs
+    # Map standard OpenAPI types to Python types
+    return {
+        "string": str,
+        "integer": int,
+        "boolean": bool,
+        "number": float,
+        "object": dict,
+    }.get(openapi_type, Any)
 
 
-# Function to generate Pydantic models from OpenAPI components
-def generate_pydantic_models(components: Dict[str, Any], models: Dict[str, Type[BaseModel]]) -> None:
-    component_model_mapping = {}
-
+# Create Pydantic models
+def create_pydantic_models(components: Dict[str, Any], models: Dict[str, Type[BaseModel]]) -> None:
+    # First pass: create object models
     for model_name, model_spec in components.items():
-        sanitized_model_name = sanitize_class_name(model_name.split(".")[-1])
-        if model_spec.get("type") == "array":
-            fields = {}
-            if "items" in model_spec:
-                if "$ref" in model_spec["items"]:
-                    ref_name = model_spec["items"]["$ref"].split("/")[-1]
-                    sanitized_ref_name = sanitize_class_name(ref_name.split(".")[-1])
-                    array_model_name = f"ArrayOf{sanitized_ref_name}"
-                    component_model_mapping[model_name] = array_model_name
-                    if sanitized_ref_name in models:
-                        models[array_model_name] = List[models[sanitized_ref_name]]
-                        logging.info(f"Created Pydantic model: {array_model_name}")
-                    else:
-                        models[array_model_name] = List[f'"{sanitized_ref_name}"']
-                        logging.info(f"Created Pydantic model with forward reference: {array_model_name}")
-                else:
-                    array_item_type = map_openapi_type(model_spec["items"], components, models)
-                    component_model_mapping[model_name] = sanitized_model_name
-                    models[sanitized_model_name] = List[array_item_type]
-                    logging.info(f"Created Pydantic model: {sanitized_model_name}")
-            # continue  # Skip arrays for now
-
-        elif "properties" in model_spec:
+        sanitized_name = sanitize_name(model_name)  # Ensure the model name is valid
+        if model_spec.get("type") == "object" and "properties" in model_spec:
+            # Handle object models first
             fields = {}
             required_fields = model_spec.get("required", [])
             for field_name, field_spec in model_spec["properties"].items():
-                field_type = map_openapi_type(field_spec, components, models)
-                alias = field_name
+                field_type = map_type(field_spec, field_name, components, models)  # Map the OpenAPI type to Python type
+                sanitized_field_name = sanitize_field_name(field_name)
                 if field_name in required_fields:
-                    fields[field_name] = (field_type, Field(..., alias=alias))
+                    fields[sanitized_field_name] = (field_type, Field(..., alias=field_name))
                 else:
-                    fields[field_name] = (
-                        Optional[field_type],
-                        Field(None, alias=alias),
+                    fields[sanitized_field_name] = (Optional[field_type], Field(None, alias=field_name))
+            models[sanitized_name] = create_model(sanitized_name, **fields)
+            logging.info(f"Created object model: {sanitized_name}")
+
+    # Second pass: handle array models referencing the object models
+    for model_name, model_spec in components.items():
+        sanitized_name = sanitize_name(model_name)
+        if model_spec.get("type") == "array":
+            # Handle array models
+            items_spec = model_spec.get("items")
+            if "$ref" in items_spec:
+                # Handle reference in 'items'
+                ref_model_name = sanitize_name(items_spec["$ref"].split("/")[-1])
+                if ref_model_name not in models:
+                    raise KeyError(
+                        f"Referenced model '{ref_model_name}' not found while creating array '{sanitized_name}'"
                     )
-            if sanitized_model_name in models:
-                sanitized_model_name += "_2"
-            component_model_mapping[model_name] = sanitized_model_name
-            models[sanitized_model_name] = create_model(sanitized_model_name, **fields)
-            logging.info(f"Created Pydantic model: {sanitized_model_name}")
-    
-    return component_model_mapping
+                models[sanitized_name] = List[models[ref_model_name]]  # Create List type for array items
+                logging.info(f"Created array model: {sanitized_name} -> List[{ref_model_name}]")
+            else:
+                # Fallback if 'items' is missing or doesn't have a reference
+                models[sanitized_name] = List[Any]
+                logging.warning(f"Array model {sanitized_name} has no valid 'items' reference. Using List[Any].")
 
 
-# Function to create the configuration dictionary for endpoints
-def create_config(
-    paths: Dict[str, Any], resolved_components: Dict[str, Any], pydantic_names: Dict[str, str]
-) -> Dict[str, Dict[str, str]]:
-    config = {}
-    for path, path_spec in paths.items():
-        for method, method_spec in path_spec.items():
-            operation_id = method_spec["operationId"]
-            response_schema_ref = method_spec["responses"]["200"]["content"]["application/json"]["schema"]
-            model_name = get_model_name_from_schema_ref(response_schema_ref, pydantic_names)
-            if (
-                model_name in resolved_components
-                and resolved_components[model_name]["type"] == "array"
-                and "items" in resolved_components[model_name]
-                and "$ref" in resolved_components[model_name]["items"]
-            ):
-                base_model_name = sanitize_class_name(resolved_components[model_name]["items"]["$ref"].split(".")[-1])
-                model_name = f"ArrayOf{base_model_name}"
-                config[operation_id] = {"uri": path, "model": model_name}
-            elif model_name:
-                sanitized_model_name = pydantic_names.get(model_name, sanitize_class_name(model_name.split(".")[-1]))
-                config[operation_id] = {"uri": path, "model": sanitized_model_name}
-    return config
+# Save models and config to files
+def determine_typing_imports(model_fields, models, circular_models, is_list_model=False):
+    """Determine the necessary typing imports based on the model's fields."""
+    import_set = set()  # Core imports like BaseModel will be handled separately
+
+    # Always add List for list models
+    if is_list_model:
+        import_set.add("from typing import List")
+
+    for field in model_fields.values():
+        field_annotation = get_type_str(field.annotation, models)
+        if "Optional" in field_annotation:
+            import_set.add("from typing import Optional")
+        if "List" in field_annotation:
+            import_set.add("from typing import List")
+        if "Union" in field_annotation:
+            import_set.add("from typing import Union")
+        if field_annotation in circular_models:
+            import_set.add("from typing import ForwardRef")
+
+    return import_set
 
 
-# Helper function to handle forward references and literals
-def handle_forward_ref(annotation: Any, forward_refs: Set[str], model_name: str) -> Any:
-    if isinstance(annotation, ForwardRef):
-        forward_refs.add(model_name)
-        return f"{annotation.__forward_arg__}"
-    return annotation
+def save_models(
+    models: Dict[str, Union[Type[BaseModel], Type[List]]],
+    base_path: str,
+    dependency_graph: Dict[str, Set[str]],
+    circular_models: Set[str],
+):
+    models_dir = os.path.join(base_path, "models")
+    os.makedirs(models_dir, exist_ok=True)
+
+    init_file = os.path.join(models_dir, "__init__.py")
+    with open(init_file, "w") as init_f:
+
+        for model_name, model in models.items():
+            save_model_file(model_name, model, models, models_dir, dependency_graph, circular_models, init_f)
+
+        init_f.write(f"\n__all__ = [\n    {',\n    '.join(models.keys())}\n]\n")
+
+    # Write enums after saving the models
+    write_enum_files(models, models_dir)
 
 
-def handle_literal(annotation: Any) -> Any:
-    if hasattr(annotation, "__origin__") and annotation.__origin__ is Literal:
-        literals = ", ".join(repr(v) for v in annotation.__args__)
-        return f"Literal[{literals}]"
-    return annotation
+def save_model_file(
+    model_name: str,
+    model: Any,
+    models: Dict[str, Type[BaseModel]],
+    models_dir: str,
+    dependency_graph: Dict[str, Set[str]],
+    circular_models: Set[str],
+    init_f,
+):
+    sanitized_model_name = sanitize_name(model_name)
+    model_file = os.path.join(models_dir, f"{sanitized_model_name}.py")
 
+    with open(model_file, "w") as mf:
+        mf.write("from pydantic import BaseModel, Field\n")
 
-def get_model_name_from_schema_ref(schema_ref: Dict[str, Any], pydantic_names: Dict[str, str]) -> Optional[str]:
-    if "items" in schema_ref and "$ref" in schema_ref["items"]:
-        return schema_ref["items"]["$ref"].split("/")[-1]
-    elif "$ref" in schema_ref:
-        return schema_ref["$ref"].split("/")[-1]
-    return None
-
-
-# Function to determine the field type for a given field annotation
-def get_field_type(field_annotation: Any, forward_refs: Set[str], model_name: str) -> str:
-    field_annotation = handle_forward_ref(field_annotation, forward_refs, model_name)
-    field_annotation = handle_literal(field_annotation)
-
-    if isinstance(field_annotation, str):
-        return field_annotation
-
-    origin = get_origin(field_annotation)
-    args = get_args(field_annotation)
-
-    if origin is Union and len(args) == 2 and args[1] is type(None):
-        inner_type = get_field_type(args[0], forward_refs, model_name)
-        return f"Optional[{inner_type}]"
-    elif (
-        callable(field_annotation)
-        and not isinstance(field_annotation, type)
-        and not hasattr(field_annotation, "__origin__")
-    ):
-        evaluated_lambda = field_annotation()
-        return get_field_type(evaluated_lambda, forward_refs, model_name)
-
-    if args:
-        inner_type = get_field_type(args[0], forward_refs, model_name)
-        if origin is list:
-            return f"List[{inner_type}]"
-        elif origin is dict:
-            key_type = get_field_type(args[0], forward_refs, model_name)
-            value_type = get_field_type(args[1], forward_refs, model_name)
-            return f"Dict[{key_type}, {value_type}]"
+        if is_list_model(model):
+            handle_list_model(mf, model, models, dependency_graph, circular_models, sanitized_model_name)
         else:
-            return f"{origin.__name__}[{inner_type}]"
+            handle_regular_model(mf, model, models, dependency_graph, circular_models, sanitized_model_name)
 
-    if hasattr(field_annotation, "__name__"):
-        return field_annotation.__name__
+        init_f.write(f"from .{sanitized_model_name} import {sanitized_model_name}\n")
+
+
+def is_list_model(model: Any) -> bool:
+    return hasattr(model, "__origin__") and model.__origin__ is list
+
+
+def handle_list_model(mf, model, models, dependency_graph, circular_models, sanitized_model_name):
+    inner_type = model.__args__[0]
+
+    # Determine necessary imports for list models
+    import_set = determine_typing_imports({}, models, circular_models, is_list_model=True)
+
+    type_imports = set()
+
+    if hasattr(inner_type, "__name__") and inner_type.__name__ not in {"Optional", "List", "Union"}:
+        inner_model_name = sanitize_name(inner_type.__name__)
+        if inner_model_name in dependency_graph:
+            import_set.add(f"from .{inner_model_name} import {inner_model_name}")
+        else:
+            type_imports.add(inner_type.__name__)
+
+    if type_imports:
+        import_set.add(f"from typing import {', '.join(type_imports)}")
+
+    # Write imports
+    mf.write("\n".join(sorted(import_set)) + "\n\n\n")
+
+    # Define the list model using RootModel
+    mf.write(f"class {sanitized_model_name}(BaseModel):\n")
+    mf.write(f"    data: List[{inner_type.__name__}] = Field(..., alias='data')\n")
+
+    mf.write(f"\n    class Config:\n")
+    mf.write("        from_attributes = True\n")
+
+
+def handle_regular_model(mf, model, models, dependency_graph, circular_models, sanitized_model_name):
+    if hasattr(model, "model_fields"):
+        # Determine necessary imports for regular models
+        import_set = determine_typing_imports(model.model_fields, models, circular_models)
+
+        # Write imports for referenced models
+        referenced_models = dependency_graph.get(sanitized_model_name, set())
+        for ref_model in referenced_models:
+            if ref_model != sanitized_model_name and ref_model not in {"Optional", "List", "Union"}:
+                import_set.add(f"from .{ref_model} import {ref_model}")
+
+        # Add Enum imports
+        import_set.update(find_enum_imports(model, models))
+
+        # Write imports
+        mf.write("\n".join(sorted(import_set)) + "\n\n\n")
+
+        # Write class definition
+        mf.write(f"class {sanitized_model_name}(BaseModel):\n")
+        write_model_fields(mf, model, models, circular_models, sanitized_model_name)
+
+        # Pydantic model config
+        mf.write("\n    class Config:\n")
+        mf.write("        from_attributes = True\n")
+
+        # Add model_rebuild() if circular dependencies exist
+        if sanitized_model_name in circular_models:
+            mf.write(f"\n{sanitized_model_name}.model_rebuild()\n")
+
+
+def find_enum_imports(model: Any, models: Dict[str, Type[BaseModel]]) -> Set[str]:
+    """Find all enum imports in the model fields."""
+    import_set = set()
+    for field_name, field in model.model_fields.items():
+        inner_types = extract_inner_types(field.annotation)
+        for inner_type in inner_types:
+            if isinstance(inner_type, type) and issubclass(inner_type, Enum):
+                import_set.add(f"from .{inner_type.__name__} import {inner_type.__name__}")
+    return import_set
+
+
+def write_model_fields(mf, model, models, circular_models, sanitized_model_name):
+    """Write the fields for the model."""
+    for field_name, field in model.model_fields.items():
+        sanitized_field_name = sanitize_field_name(field_name)
+
+        # Extract the inner types (handles Optional, List, and Union)
+        inner_types = extract_inner_types(field.annotation)
+
+        # Check if any inner type is a circular reference
+        circular_reference = any(
+            (isinstance(inner_type, ForwardRef) and inner_type.__forward_arg__ in circular_models)
+            or (isinstance(inner_type, str) and inner_type in circular_models)
+            or (hasattr(inner_type, "__name__") and inner_type.__name__ in circular_models)
+            for inner_type in inner_types
+        )
+
+        # Get the type string for the field
+        field_type = get_type_str(field.annotation, models)
+
+        # Handle circular dependencies: if circular, use forward reference
+        if circular_reference:
+            mf.write(f"    {sanitized_field_name}: '{field_type}' = Field(None, alias='{field.alias}')\n")
+        else:
+            mf.write(f"    {sanitized_field_name}: {field_type} = Field(None, alias='{field.alias}')\n")
+
+
+def write_enum_files(models: Dict[str, Type[BaseModel]], models_dir: str):
+    """Write enum files directly from the model's fields."""
+    for model in models.values():
+        if hasattr(model, "model_fields"):
+            for field in model.model_fields.values():
+                inner_types = extract_inner_types(field.annotation)
+                for inner_type in inner_types:
+                    if isinstance(inner_type, type) and issubclass(inner_type, Enum):
+                        enum_name = inner_type.__name__
+                        enum_file = os.path.join(models_dir, f"{enum_name}.py")
+                        with open(enum_file, "w") as ef:
+                            ef.write("from enum import Enum\n\n\n")
+                            ef.write(f"class {enum_name}(Enum):\n")
+                            for enum_member in inner_type:
+                                ef.write(f"    {enum_member.name} = '{enum_member.value}'\n")
+
+
+def sanitize_field_name(field_name: str) -> str:
+    """Sanitize field names that are Python reserved keywords."""
+    if keyword.iskeyword(field_name):
+        return f"{field_name}_field"  # Append '_field' to reserved keywords
+    return field_name
+
+
+def get_type_str(annotation: Any, models: Dict[str, Type[BaseModel]]) -> str:
+    """Convert the annotation to a valid Python type string for writing to a file, handling model references."""
+    if isinstance(annotation, ForwardRef):
+        # Handle ForwardRef directly by returning the forward-referenced name
+        return annotation.__forward_arg__
+
+    if isinstance(annotation, type):
+        # Handle basic types (e.g., int, str, float)
+        return annotation.__name__
+
+    elif hasattr(annotation, "__origin__"):
+        origin = annotation.__origin__
+        args = annotation.__args__
+
+        # Handle List (e.g., List[str], List[Casualty])
+        if origin is list or origin is List:
+            inner_type = get_type_str(args[0], models)
+            return f"List[{inner_type}]"
+
+        # Handle Dict (e.g., Dict[str, int])
+        elif origin is dict or origin is Dict:
+            key_type = get_type_str(args[0], models)
+            value_type = get_type_str(args[1], models)
+            return f"Dict[{key_type}, {value_type}]"
+
+        # Handle Optional and Union (e.g., Optional[int], Union[str, int])
+        elif origin is Union:
+            if len(args) == 2 and args[1] is type(None):
+                # It's an Optional type
+                return f"Optional[{get_type_str(args[0], models)}]"
+            else:
+                # General Union type
+                inner_types = ", ".join(get_type_str(arg, models) for arg in args)
+                return f"Union[{inner_types}]"
+
+    elif hasattr(annotation, "__name__") and annotation.__name__ in models:
+        # Handle references to other models (e.g., Casualty)
+        return annotation.__name__
+
     return "Any"
 
 
-# Helper function to get the innermost type of a field represented as a string
-def get_innermost_type(field_type: str) -> str:
-    while field_type.startswith("Optional[") or field_type.startswith("List["):
-        field_type = field_type.split("[", 1)[1].rsplit("]", 1)[0]
-    return field_type
+def save_config(config: Dict[str, Dict[str, str]], file_path: str):
+    with open(file_path, "w") as f:
+        json.dump(config, f, indent=4)
 
 
-# Helper function to build the dependency graph
+def create_mermaid_class_diagram(dependency_graph: Dict[str, Set[str]], output_file: str):
+    with open(output_file, "w") as f:
+        f.write("classDiagram\n")
+        for model, dependencies in dependency_graph.items():
+            for dep in dependencies:
+                f.write(f"    {model} --> {dep}\n")
+
+
+# Dependency handling and circular references
+def extract_inner_types(annotation: Any) -> List[Any]:
+    """Recursively extract inner types from nested generics (e.g., Optional[List[ForwardRef]])"""
+    inner_types = []
+    origin = get_origin(annotation)
+
+    # If it's a Union (i.e., Optional), extract the non-None type
+    if origin is Union:
+        for arg in get_args(annotation):
+            if arg is not type(None):  # Ignore NoneType in Optional
+                inner_types.extend(extract_inner_types(arg))
+    # If it's a List or another generic type, extract its arguments
+    elif origin in {list, List, Optional}:
+        inner_types.extend(extract_inner_types(get_args(annotation)[0]))
+    # Base case: return the annotation itself
+    else:
+        inner_types.append(annotation)
+
+    return inner_types
+
+
 def build_dependency_graph(models: Dict[str, Union[Type[BaseModel], Type[List]]]) -> Dict[str, Set[str]]:
-    dependency_graph = defaultdict(set)
-    all_models = set(models.keys())
+    """Build a dependency graph where each model depends on other models."""
+    graph = defaultdict(set)
 
     for model_name, model in models.items():
-        if get_origin(model) is list:
-            element_type = get_args(model)[0]
-            if isinstance(element_type, str):
-                dependency_graph[model_name].add(element_type)
-            elif hasattr(element_type, "__name__") and element_type.__name__ in all_models:
-                dependency_graph[model_name].add(element_type.__name__)
-        else:
+        if isinstance(model, type) and hasattr(model, "model_fields"):
+            # Iterate over each field in the model
             for field in model.model_fields.values():
-                field_type = get_field_type(field.annotation, set(), model_name)
-                innermost_type = get_innermost_type(field_type)
-                if innermost_type in all_models:
-                    dependency_graph[model_name].add(innermost_type)
-        if model_name not in dependency_graph:
-            dependency_graph[model_name] = set()
+                # Recursively unwrap and extract the inner types
+                inner_types = extract_inner_types(field.annotation)
 
-    return dependency_graph
+                for inner_type in inner_types:
+                    # Handle ForwardRef (string-based references)
+                    if isinstance(inner_type, ForwardRef):
+                        graph[model_name].add(inner_type.__forward_arg__)
 
+                    # Handle direct model references
+                    elif hasattr(inner_type, "__name__") and inner_type.__name__ in models:
+                        graph[model_name].add(sanitize_name(inner_type.__name__))
 
-# Function to detect circular dependencies
-def detect_circular_dependencies(dependency_graph: Dict[str, Set[str]]) -> Set[str]:
-    circular_models = set()
-    visited = set()
-    stack = set()
+                    # If it's a generic type, keep unwrapping
+                    elif hasattr(inner_type, "__origin__"):
+                        nested_types = extract_inner_types(inner_type)
+                        for nested_type in nested_types:
+                            if isinstance(nested_type, ForwardRef):
+                                graph[model_name].add(nested_type.__forward_arg__)
+                            elif hasattr(nested_type, "__name__") and nested_type.__name__ in models:
+                                graph[model_name].add(sanitize_name(nested_type.__name__))
 
-    def visit(model: str):
-        if model in visited:
-            return
-        if model in stack:
-            circular_models.add(model)
-            return
-        stack.add(model)
-        for dep in dependency_graph[model]:
-            visit(dep)
-        stack.remove(model)
-        visited.add(model)
+        # Handle List models (arrays)
+        elif hasattr(model, "__origin__") and model.__origin__ is list:
+            inner_type = model.__args__[0]
+            if hasattr(inner_type, "__name__") and inner_type.__name__ in models:
+                graph[model_name].add(sanitize_name(inner_type.__name__))
 
-    for model in dependency_graph:
-        visit(model)
-
-    return circular_models
+    return graph
 
 
-def replace_innermost_type(field_type: Any, new_type: str) -> Any:
-    origin = get_origin(field_type)
-    args = get_args(field_type)
-
-    if not args:
-        return new_type
-
-    if origin is Union and len(args) == 2 and args[1] is type(None):
-        inner_type = replace_innermost_type(args[0], new_type)
-        return Optional[inner_type]
-    elif origin is list:
-        inner_type = replace_innermost_type(args[0], new_type)
-        return List[inner_type]
-    elif origin is dict:
-        key_type = replace_innermost_type(args[0], new_type)
-        value_type = replace_innermost_type(args[1], new_type)
-        return Dict[key_type, value_type]
-    else:
-        inner_type = replace_innermost_type(args[0], new_type)
-        return origin[inner_type]
+def handle_dependencies(models: Dict[str, Type[BaseModel]]):
+    graph = build_dependency_graph(models)
+    sorted_models = topological_sort(graph)
+    circular_models = detect_circular_dependencies(graph)
+    break_circular_dependencies(models, circular_models)
+    return graph, circular_models
 
 
-# Function to modify models to break circular dependencies
-def break_circular_dependencies(models: Dict[str, Union[Type[BaseModel], Type[List]]], circular_models: Set[str]):
-    for model_name in circular_models:
-        model = models[model_name]
-        for field_name, field in model.model_fields.items():
-            field_annotation = field.annotation
-            field_type = get_field_type(field_annotation, set(), model_name)
-            innermost_type = get_innermost_type(field_type)
-            if innermost_type == model_name:
-                new_type = f'"{model_name}"'
-                new_field_annotation = replace_innermost_type(field_annotation, new_type)
-                models[model_name].model_fields[field_name].annotation = new_field_annotation
+def topological_sort(graph: Dict[str, Set[str]]) -> List[str]:
+    # Exclude Python built-in types from the graph
+    built_in_types = {"str", "int", "float", "bool", "List", "Dict", "Optional", "Union", "Any"}
 
+    # Filter out built-in types from the graph
+    in_degree = {model: 0 for model in graph if model not in built_in_types}
 
-# Function to perform topological sorting on the dependency graph
-def topological_sort(dependency_graph: Dict[str, Set[str]]) -> List[str]:
-    in_degree = {model: 0 for model in dependency_graph}
-    for dependencies in dependency_graph.values():
-        for dep in dependencies:
-            if dep not in in_degree:
-                in_degree[dep] = 0
-            in_degree[dep] += 1
+    for model, deps in graph.items():
+        if model in built_in_types:
+            continue  # Skip built-in types
 
+        for dep in deps:
+            if dep not in built_in_types:
+                if dep not in in_degree:
+                    in_degree[dep] = 0
+                in_degree[dep] += 1
+
+    # Initialize the queue with nodes that have an in-degree of 0
     queue = deque([model for model in in_degree if in_degree[model] == 0])
     sorted_models = []
 
     while queue:
         model = queue.popleft()
         sorted_models.append(model)
-        for dep in dependency_graph[model]:
+        for dep in graph[model]:
+            if dep in built_in_types:
+                continue  # Skip built-in types
             in_degree[dep] -= 1
             if in_degree[dep] == 0:
                 queue.append(dep)
@@ -594,235 +848,191 @@ def topological_sort(dependency_graph: Dict[str, Set[str]]) -> List[str]:
         logging.warning(f"Circular dependencies detected among models: {missing_models}")
         sorted_models.extend(missing_models)
 
-    return sorted_models[::-1]
+    return sorted_models
 
 
-def sanitize_field_name(field_name: str) -> str:
-    if keyword.iskeyword(field_name):
-        return f"{field_name}_field"
-    return field_name
+def detect_circular_dependencies(graph: Dict[str, Set[str]]) -> Set[str]:
+    circular_models = set()
+    visited = set()
+    stack = set()
+
+    # Use a copy of the graph's keys to avoid modifying the dictionary during iteration
+    def visit(model: str):
+        if model in visited:
+            return
+        if model in stack:
+            circular_models.add(model)
+            return
+        stack.add(model)
+        for dep in graph.get(model, []):
+            visit(dep)
+        stack.remove(model)
+        visited.add(model)
+
+    # Iterate over a copy of the graph's keys
+    for model in list(graph.keys()):
+        visit(model)
+
+    return circular_models
 
 
-def camel_to_snake(name: str) -> str:
-    """Convert camelCase to snake_case."""
-    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-    s2 = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1)
-    return s2.lower()
+def rebuild_annotation_with_inner_types(original_annotation: Any, inner_types: List[Any]) -> Any:
+    origin = get_origin(original_annotation)
+    if origin is Union:
+        # Rebuild Union (e.g., Optional) with the new inner types
+        return Union[tuple(inner_types)]
+    elif origin in {list, List}:
+        # Rebuild List with the new inner types
+        return List[inner_types[0]]
+    elif origin in {dict, Dict}:
+        # Rebuild Dict with the new key-value types
+        return Dict[inner_types[0], inner_types[1]]
+    # If it's not a generic, just return the updated type
+    return inner_types[0]
 
 
-# Function to save Pydantic models to a file (updated with topological sorting)
-def save_models_to_file(
-    models: Dict[str, Union[Type[BaseModel], Type[List]]],
-    directory_path: str,
-    forward_ref_models: Set[str],
-    config: Dict[str, Dict[str, str]],
-):
-    """Save Pydantic models to separate files and create an __init__.py."""
-    output_path = f"{directory_path}/models"
-    os.makedirs(f"{output_path}", exist_ok=True)
+def break_circular_dependencies(models: Dict[str, Type[BaseModel]], circular_models: Set[str]):
+    for model_name in circular_models:
+        for field_name, field in models[model_name].model_fields.items():
+            # Extract the inner types (e.g., the actual model or type) from the field annotation
+            inner_types = extract_inner_types(field.annotation)
 
-    dependency_graph = build_dependency_graph(models)
-    sorted_models = topological_sort(dependency_graph)
+            # Check for circular dependencies in the extracted inner types
+            for i, inner_type in enumerate(inner_types):
+                if isinstance(inner_type, type) and inner_type.__name__ in circular_models:
+                    # Replace the circular dependency with ForwardRef while keeping the surrounding structure
+                    inner_types[i] = ForwardRef(inner_type.__name__)
 
-    init_file_path = os.path.join(output_path, "__init__.py")
-    with open(init_file_path, "w") as init_file:
-        init_file.write("from pydantic import BaseModel, Field\n")
-        init_file.write("from typing import Optional, List, Union, ForwardRef, Literal\n")
-        init_file.write("from datetime import datetime\n")
-        init_file.write("from enum import Enum\n\n")
-
-        imports = []
-        all_models = []
-
-        for model_name in sorted_models:
-            model_file_path = os.path.join(output_path, f"{model_name}.py")
-            with open(model_file_path, "w") as model_file:
-                model_file.write(
-                    "from pydantic import BaseModel, Field\n"
-                    "from typing import Optional, List, Union, ForwardRef, Literal\n"
-                    "from datetime import datetime\n"
-                    "from enum import Enum\n\n"
-                )
-
-                # Write imports for dependencies
-                for dependency in dependency_graph[model_name]:
-                    model_file.write(f"from {dependency} import {dependency}\n")
-                model_file.write("\n")
-                model_file.write(f"class {model_name}(BaseModel):\n")
-                if get_origin(models[model_name]) is list:
-                    array_type = get_field_type(get_args(models[model_name])[0], set(), model_name)
-                    if array_type in sorted_models:
-                        model_file.write(f"    {array_type}s: List[{array_type}] = Field(None)\n")
-                else:
-                    for field_name, field in models[model_name].model_fields.items():
-                        new_field_name = sanitize_field_name(camel_to_snake(field_name))
-                        field_annotation = field.annotation
-                        field_type = get_field_type(field_annotation, set(), model_name)
-                        if field.default is None:
-                            model_file.write(
-                                f"    {new_field_name}: {field_type} = Field(None, alias='{field_name}')\n"
-                            )
-                        else:
-                            model_file.write(f"    {new_field_name}: {field_type} = Field(alias='{field_name}')\n")
-
-                # Check if the model is used as a response in the config
-                if any(details["model"] == model_name for details in config.values()):
-                    model_file.write("    content_expires: Optional[datetime] = Field(None)\n")
-                    model_file.write("    shared_expires: Optional[datetime] = Field(None)\n")
-
-                model_file.write('    model_config = {"populate_by_name": True}\n\n')
-
-                if model_name in forward_ref_models:
-                    model_file.write(f"{model_name}.model_rebuild()\n")
-
-            imports.append(f"from {model_name} import {model_name}")
-            all_models.append(model_name)
-
-        init_file.write("\n".join(imports) + "\n\n")
-        init_file.write(f"__all__ = [{',\n    '.join(all_models)}]\n")
-
-    logging.info(f"Models and __init__.py saved to {output_path}")
+            # Rebuild the field annotation using the updated inner types, preserving any Optional/List structure
+            field.annotation = rebuild_annotation_with_inner_types(field.annotation, inner_types)
 
 
-# Function to save the configuration to a file
-def save_config_to_file(config: Dict[str, Dict[str, str]], file_path: str):
-    with open(file_path, "w") as file:
-        file.write("endpoints = {\n")
-        for endpoint, details in config.items():
-            file.write(f"    '{endpoint}': {details},\n")
-        file.write("}\n")
-        logging.info(f"Saved endpoint configuration to {file_path}")
+# Load OpenAPI specs
+def load_specs(folder_path: str) -> List[Dict[str, Any]]:
+    return [json.load(open(os.path.join(folder_path, f))) for f in os.listdir(folder_path) if f.endswith(".json")]
 
 
-def create_mermaid_class_diagram(dependency_graph: Dict[str, Set[str]], output_file: str):
-    """Create a Mermaid class diagram from the dependency graph and write it to a file."""
-    with open(output_file, "w") as file:
-        file.write("classDiagram\n")
-        for model, dependencies in dependency_graph.items():
-            for dependency in dependencies:
-                file.write(f"    {model} --> {dependency}\n")
-    logging.info(f"Mermaid class diagram saved to {output_file}")
+def get_api_name(spec: Dict[str, Any]) -> str:
+    return spec["info"]["title"]
 
 
-# Main function to execute the script
-def main(base_path: str):
-    logging.info("Loading OpenAPI specifications...")
-    specs = load_openapi_specs(base_path)
-
-    logging.info("Combining components from all specifications...")
-    pydantic_names = {}
-    combined_components, combined_paths = combine_components_and_paths(specs, pydantic_names)
-
-    max_iterations = 200
-    resolved_components, updated_paths, ref_map = resolve_duplicate_schemas(
-        combined_components, combined_paths, max_iterations, specs
-    )
-
-    if not resolved_components:
-        logging.error("Max iterations reached. Potential issue with circular references or unresolved schemas.")
-        return
-
-    logging.info("Generating Pydantic models...")
-    models, component_model_name_mapping = generate_models(resolved_components)
-
-    # rename the keys in resolved_components using the map in component_model_name_mapping
-    remapped_resolved_components = {component_model_name_mapping.get(key, key): value for key, value in resolved_components.items()}
-
-    logging.info("Building dependency graph and handling circular dependencies...")
-    dependency_graph = handle_dependencies(models)
-
-    logging.info("Creating configuration for endpoints...")
-    config = create_config(updated_paths, remapped_resolved_components, pydantic_names)
-
-    logging.info("Saving models and configuration to files...")
-    save_output_files(models, base_path, dependency_graph, config)
-
-    logging.info("Processing completed.")
-
-
-def combine_components_and_paths(
-    specs: List[Dict[str, Any]], pydantic_names: Dict[str, str]
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+# Combine components and paths from all OpenAPI specs
+def combine_components_and_paths(specs: List[Dict[str, Any]], pydantic_names: Dict[str, str]) -> Dict[str, Any]:
     combined_components = {}
     combined_paths = {}
 
     for spec in specs:
         api_name = get_api_name(spec)
-        logging.info(f"Processing API: {api_name}")
-        rename_entities_and_update_references(spec, api_name, pydantic_names)
+        logging.info(f"Processing {api_name}")
+        update_entities(spec, api_name, pydantic_names)
         combined_components.update(spec.get("components", {}).get("schemas", {}))
 
-        base_path_from_server = get_base_path_from_server(spec)
-        update_combined_paths(combined_paths, spec, base_path_from_server)
-
-    return combined_components, combined_paths
+    return combined_components
 
 
-def get_base_path_from_server(spec: Dict[str, Any]) -> str:
-    if "servers" in spec and isinstance(spec["servers"], list) and len(spec["servers"]) > 0:
-        base_url = spec["servers"][0].get("url", "")
-        return re.sub(r"https?://[^/]+", "", base_url)
-    return ""
+def are_models_equal(model1: Type[BaseModel], model2: Type[BaseModel]) -> bool:
+    """Check if two Pydantic models are equal based on their fields and types."""
+    fields1 = {name: str(field.annotation) for name, field in model1.model_fields.items()}
+    fields2 = {name: str(field.annotation) for name, field in model2.model_fields.items()}
+    return fields1 == fields2
 
 
-def update_combined_paths(combined_paths: Dict[str, Any], spec: Dict[str, Any], base_path_from_server: str):
-    for path, path_spec in spec.get("paths", {}).items():
-        full_path = base_path_from_server + path
-        combined_paths[full_path] = path_spec
+def deduplicate_models(
+    models: Dict[str, Union[Type[BaseModel], Type[List]]]
+) -> Dict[str, Union[Type[BaseModel], Type[List]]]:
+    """Deduplicate models by removing models with the same content."""
+    deduplicated_models = {}
+    reference_map = {}
+
+    # Compare models to detect duplicates
+    for model_name, model in models.items():
+        found_duplicate = False
+
+        # Compare with already deduplicated models
+        for dedup_model_name, dedup_model in deduplicated_models.items():
+            if isinstance(model, type) and isinstance(dedup_model, type):
+                # Compare Pydantic models
+                if are_models_equal(model, dedup_model):
+                    reference_map[model_name] = dedup_model_name
+                    found_duplicate = True
+                    break
+
+            # Handle List models separately by comparing their inner types
+            model_origin = get_origin(model)
+            dedup_model_origin = get_origin(dedup_model)
+
+            if model_origin in {list, List} and dedup_model_origin in {list, List}:
+                model_inner_type = get_args(model)[0]
+                dedup_inner_type = get_args(dedup_model)[0]
+
+                # If the inner types of the lists are the same, consider them duplicates
+                if model_inner_type == dedup_inner_type:
+                    reference_map[model_name] = dedup_model_name
+                    found_duplicate = True
+                    break
+
+        # If no duplicate found, keep the model
+        if not found_duplicate:
+            deduplicated_models[model_name] = model
+
+    # Return the deduplicated models and reference map
+    return deduplicated_models, reference_map
 
 
-def resolve_duplicate_schemas(
-    combined_components: Dict[str, Any],
-    combined_paths: Dict[str, Any],
-    max_iterations: int,
-    specs: List[Dict[str, Any]],
-) -> Tuple[Dict[str, Any], Dict[str, str]]:
-    updated_paths = combined_paths.copy()
-    for iteration in range(max_iterations):
-        logging.info(f"Iteration {iteration + 1}: Removing duplicate schemas...")
-        resolved_components, ref_map = remove_duplicate_schemas(combined_components)
+def update_model_references(
+    models: Dict[str, Union[Type[BaseModel], Type[List]]], reference_map: Dict[str, str]
+) -> Dict[str, Union[Type[BaseModel], Type[List]]]:
+    """Update references in models based on the deduplication reference map."""
+    updated_models = {}
 
-        logging.info("Updating references in all specifications...")
-        updated_specs = update_references(specs, ref_map)
-        update_references_recursive(updated_paths, ref_map)
+    for model_name, model in models.items():
+        # If the model was deduplicated, update its reference
+        if model_name in reference_map:
+            dedup_model_name = reference_map[model_name]
+            updated_models[model_name] = models[dedup_model_name]
+        else:
+            updated_models[model_name] = model
 
-        if not ref_map:
-            return resolved_components, updated_paths, ref_map
-
-        combined_components = resolved_components
-
-    return None, None
+    return updated_models
 
 
-def generate_models(resolved_components: Dict[str, Any]) -> Dict[str, Type[BaseModel]]:
+# Main function
+def main(base_path: str):
+    logging.info("Loading OpenAPI specs...")
+    specs = load_specs(base_path)
+
+    logging.info("Generating components...")
+    pydantic_names = {}
+    combined_components = combine_components_and_paths(specs, pydantic_names)
+
+    logging.info("Generating Pydantic models...")
     models = {}
-    component_model_name_mapping = generate_pydantic_models(resolved_components, models)
-    return models, component_model_name_mapping
+    create_pydantic_models(combined_components, models)
+
+    # Deduplicate models before saving them
+    logging.info("Deduplicating models...")
+    deduplicated_models, reference_map = deduplicate_models(models)
+
+    # Update model references
+    models = update_model_references(deduplicated_models, reference_map)
+
+    logging.info("Handling dependencies...")
+    dependency_graph, circular_models = handle_dependencies(models)
+
+    # Now save the deduplicated models
+    logging.info("Saving models to files...")
+    save_models(deduplicated_models, base_path, dependency_graph, circular_models)
+
+    # If you still want to save the config and diagram, you can uncomment these parts:
+    # logging.info("Saving configuration file...")
+    # config = {"sample_endpoint": {"uri": "/sample", "model": "SampleModel"}}  # Simplified config
+    # save_config(config, os.path.join(base_path, "config.json"))
+
+    logging.info("Creating Mermaid class diagram...")
+    create_mermaid_class_diagram(dependency_graph, os.path.join(base_path, "class_diagram.mmd"))
+
+    logging.info("Processing complete.")
 
 
-def handle_dependencies(models: Dict[str, Type[BaseModel]]) -> Dict[str, Set[str]]:
-    logging.info("Building dependency graph...")
-    dependency_graph = build_dependency_graph(models)
-
-    logging.info("Detecting circular dependencies...")
-    circular_models = detect_circular_dependencies(dependency_graph)
-
-    logging.info("Breaking circular dependencies...")
-    break_circular_dependencies(models, circular_models)
-
-    return dependency_graph
-
-
-def save_output_files(
-    models: Dict[str, Type[BaseModel]],
-    base_path: str,
-    dependency_graph: Dict[str, Set[str]],
-    config: Dict[str, Dict[str, str]],
-):
-    save_models_to_file(models, base_path, dependency_graph, config)
-    save_config_to_file(config, f"{base_path}config.py")
-    create_mermaid_class_diagram(dependency_graph, f"{base_path}class_diagram.mmd")
-
-
-base_path = "OpenAPI_specs/"
-main(base_path)
+if __name__ == "__main__":
+    main("OpenAPI_specs/")

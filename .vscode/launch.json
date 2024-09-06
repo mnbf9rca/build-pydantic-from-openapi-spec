@@ -9,7 +9,8 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/build_models.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "preLaunchTask": "Delete existing model files"
         },
         {
             "name": "Python Debugger: current file",
