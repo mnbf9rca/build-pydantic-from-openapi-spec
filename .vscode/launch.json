@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/build_models.py",
             "console": "integratedTerminal",
-            "preLaunchTask": "Delete existing model files"
+            "preLaunchTask": "copy model files to code folder"
         },
         {
             "name": "Python Debugger: current file",

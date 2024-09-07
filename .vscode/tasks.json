@@ -7,12 +7,41 @@
       "command": "rm",
       "args": [
         "-rf",
-        "${workspaceFolder}/OpenAPI_specs/models/*.py"
+        "${workspaceFolder}/app/",        
+
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "copy model files to code folder",
+      "dependsOn": ["make sure the app folder exists", "Delete existing model files"],
+      "type": "shell",
+      "command": "cp",
+      "args": [
+        "${workspaceFolder}/model_files/*.py",
+        "${workspaceFolder}/app/"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {"label": "make sure the app folder exists",
+      "dependsOn": ["Delete existing model files"],
+      "type": "shell",
+      "command": "mkdir",
+      "args": [
+        "-p",
+        "${workspaceFolder}/app/"
       ],
       "group": {
         "kind": "build",
         "isDefault": true
       }
     }
+
   ]
 }
