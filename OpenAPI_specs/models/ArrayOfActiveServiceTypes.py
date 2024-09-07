@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
-from .ActiveServiceType import ActiveServiceType
+from pydantic import RootModel
+from typing import ActiveServiceType
 from typing import List
 
 
-class ArrayOfActiveServiceTypes(BaseModel):
-    data: List[ActiveServiceType] = Field(..., alias='data')
+class ArrayOfActiveServiceTypes(RootModel[List[ActiveServiceType]]):
 
     class Config:
         from_attributes = True

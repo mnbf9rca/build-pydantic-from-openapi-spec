@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import RootModel
 from .Disruption import Disruption
 from typing import List
 
 
-class ArrayOfDisruptions(BaseModel):
-    data: List[Disruption] = Field(..., alias='data')
+class ArrayOfDisruptions(RootModel[List[Disruption]]):
 
     class Config:
         from_attributes = True

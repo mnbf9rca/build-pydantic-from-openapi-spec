@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
-from .Mode import Mode
+from pydantic import RootModel
 from typing import List
+from typing import Mode
 
 
-class ArrayOfModes(BaseModel):
-    data: List[Mode] = Field(..., alias='data')
+class ArrayOfModes(RootModel[List[Mode]]):
 
     class Config:
         from_attributes = True

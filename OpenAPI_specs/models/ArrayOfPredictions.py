@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import RootModel
 from .Prediction import Prediction
 from typing import List
 
 
-class ArrayOfPredictions(BaseModel):
-    data: List[Prediction] = Field(..., alias='data')
+class ArrayOfPredictions(RootModel[List[Prediction]]):
 
     class Config:
         from_attributes = True

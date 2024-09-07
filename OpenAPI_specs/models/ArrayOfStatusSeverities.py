@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
-from .StatusSeverity import StatusSeverity
+from pydantic import RootModel
 from typing import List
+from typing import StatusSeverity
 
 
-class ArrayOfStatusSeverities(BaseModel):
-    data: List[StatusSeverity] = Field(..., alias='data')
+class ArrayOfStatusSeverities(RootModel[List[StatusSeverity]]):
 
     class Config:
         from_attributes = True

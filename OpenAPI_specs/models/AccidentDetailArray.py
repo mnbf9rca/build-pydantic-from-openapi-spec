@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import RootModel
 from .AccidentDetail import AccidentDetail
 from typing import List
 
 
-class AccidentDetailArray(BaseModel):
-    data: List[AccidentDetail] = Field(..., alias='data')
+class AccidentDetailArray(RootModel[List[AccidentDetail]]):
 
     class Config:
         from_attributes = True

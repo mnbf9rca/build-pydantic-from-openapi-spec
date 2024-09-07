@@ -1,10 +1,10 @@
 classDiagram
-    Place --> AdditionalProperties
     Place --> Place
-    StopPoint --> Identifier
-    StopPoint --> LineGroup
+    Place --> AdditionalProperties
     StopPoint --> Place
     StopPoint --> LineModeGroup
+    StopPoint --> Identifier
+    StopPoint --> LineGroup
     StopPoint --> AdditionalProperties
     RouteSectionNaptanEntrySequence --> StopPoint
     RouteSection --> RouteSectionNaptanEntrySequence
@@ -12,18 +12,18 @@ classDiagram
     Disruption --> RouteSection
     LineStatus --> ValidityPeriod
     LineStatus --> Disruption
-    Line --> Disruption
-    Line --> Crowding
-    Line --> LineStatus
     Line --> MatchedRoute
+    Line --> LineStatus
+    Line --> Crowding
+    Line --> Disruption
     Line --> LineServiceTypeInfo
     MatchedStop --> Identifier
     StopPointSequence --> MatchedStop
+    RouteSequence --> StopPointSequence
     RouteSequence --> MatchedStop
     RouteSequence --> OrderedRoute
-    RouteSequence --> StopPointSequence
-    RouteSearchMatch --> MatchedStop
     RouteSearchMatch --> MatchedRouteSections
+    RouteSearchMatch --> MatchedStop
     RouteSearchMatch --> LineRouteSection
     RouteSearchResponse --> RouteSearchMatch
     StationInterval --> Interval
@@ -35,12 +35,12 @@ classDiagram
     TimetableRoute --> StationInterval
     Timetable --> TimetableRoute
     Disambiguation --> DisambiguationOption
-    TimetableResponse --> MatchedStop
-    TimetableResponse --> Disambiguation
     TimetableResponse --> Timetable
+    TimetableResponse --> Disambiguation
+    TimetableResponse --> MatchedStop
     Prediction --> PredictionTiming
-    Crowding --> PassengerFlow
     Crowding --> TrainLoading
+    Crowding --> PassengerFlow
     Identifier --> Crowding
     CarParkOccupancy --> Bay
     SearchResponse --> SearchMatch
@@ -48,31 +48,31 @@ classDiagram
     LineServiceType --> LineSpecificServiceType
     ArrivalDeparture --> PredictionTiming
     StopPointsResponse --> StopPoint
-    Path --> Identifier
     Path --> JpElevation
+    Path --> Identifier
     RouteOption --> Identifier
-    Leg --> Obstacle
-    Leg --> Identifier
-    Leg --> Disruption
-    Leg --> RouteOption
-    Leg --> Instruction
-    Leg --> PlannedWork
     Leg --> Point
+    Leg --> RouteOption
+    Leg --> Identifier
     Leg --> Path
+    Leg --> Obstacle
+    Leg --> Instruction
+    Leg --> Disruption
+    Leg --> PlannedWork
     FareTap --> FareTapDetails
     Fare --> FareTap
-    JourneyFare --> Fare
     JourneyFare --> FareCaveat
-    Journey --> Leg
+    JourneyFare --> Fare
     Journey --> JourneyFare
+    Journey --> Leg
     InstructionStep --> PathAttribute
     TimeAdjustments --> TimeAdjustment
     SearchCriteria --> TimeAdjustments
     Instruction --> InstructionStep
-    ItineraryResult --> SearchCriteria
-    ItineraryResult --> Journey
     ItineraryResult --> Line
+    ItineraryResult --> Journey
     ItineraryResult --> JourneyVector
+    ItineraryResult --> SearchCriteria
     ItineraryResult --> JourneyPlannerCycleHireDockingStationData
     AccidentDetail --> Casualty
     AccidentDetail --> Vehicle
@@ -82,10 +82,10 @@ classDiagram
     RoadDisruptionImpactArea --> DbGeography
     RoadDisruption --> DbGeography
     RoadDisruption --> RoadDisruptionImpactArea
+    RoadDisruption --> RoadDisruptionLine
     RoadDisruption --> RoadDisruptionSchedule
     RoadDisruption --> RoadProject
     RoadDisruption --> Street
-    RoadDisruption --> RoadDisruptionLine
     ArrayOfModes --> Mode
     ArrayOfStatusSeverities --> StatusSeverity
     ArrayOfLines --> Line

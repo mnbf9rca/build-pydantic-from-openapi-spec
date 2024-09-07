@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
-from .RoadCorridor import RoadCorridor
+from pydantic import RootModel
 from typing import List
+from typing import RoadCorridor
 
 
-class ArrayOfRoadCorridors(BaseModel):
-    data: List[RoadCorridor] = Field(..., alias='data')
+class ArrayOfRoadCorridors(RootModel[List[RoadCorridor]]):
 
     class Config:
         from_attributes = True

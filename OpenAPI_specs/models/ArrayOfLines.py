@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import RootModel
 from .Line import Line
 from typing import List
 
 
-class ArrayOfLines(BaseModel):
-    data: List[Line] = Field(..., alias='data')
+class ArrayOfLines(RootModel[List[Line]]):
 
     class Config:
         from_attributes = True

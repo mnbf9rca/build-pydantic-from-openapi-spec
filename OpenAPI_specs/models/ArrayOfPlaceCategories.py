@@ -1,10 +1,9 @@
-from pydantic import BaseModel, Field
-from .PlaceCategory import PlaceCategory
+from pydantic import RootModel
 from typing import List
+from typing import PlaceCategory
 
 
-class ArrayOfPlaceCategories(BaseModel):
-    data: List[PlaceCategory] = Field(..., alias='data')
+class ArrayOfPlaceCategories(RootModel[List[PlaceCategory]]):
 
     class Config:
         from_attributes = True
