@@ -150,7 +150,7 @@ def create_array_types_from_model_paths(paths: Dict[str, Dict[str, Any]], compon
     return array_types
 
 def get_array_model_name(model_name: str) -> str:
-    return f"ArrayOf{sanitize_name(model_name)}"
+    return f"{sanitize_name(model_name)}Array"
 
 def create_openapi_array_type(model_ref: str) -> Dict[str, Any]:
     return {
@@ -300,7 +300,7 @@ def handle_list_or_dict_model(mf, model, models, dependency_graph, circular_mode
     
     if inner_type_name and inner_type_name not in {"Optional", "List", "Union"}:
         sanitized_inner_name = sanitize_name(inner_type_name)
-        if sanitized_inner_name in dependency_graph:
+        if sanitized_inner_name in models:
             module_imports.add(f"from .{sanitized_inner_name} import {sanitized_inner_name}")
         elif inner_type not in built_in_types:
             typing_imports.add(inner_type_name)
@@ -648,7 +648,7 @@ def get_api_name(spec: Dict[str, Any]) -> str:
 
 
 # Combine components and paths from all OpenAPI specs
-def combine_components_and_paths(specs: List[Dict[str, Any]], pydantic_names: Dict[str, str]) -> Dict[str, Any]:
+def combine_components_and_paths(specs: List[Dict[str, Any]], pydantic_names: Dict[str, str]) -> tuple[Dict[str, Any], Dict[str, Any]]:
     combined_components = {}
     combined_paths = {}
 
@@ -722,26 +722,50 @@ def deduplicate_models(
 def update_model_references(
     models: Dict[str, Union[Type[BaseModel], Type[List]]], reference_map: Dict[str, str]
 ) -> Dict[str, Union[Type[BaseModel], Type[List]]]:
-    """Update references in models based on the deduplication reference map."""
+    """Update references in models based on the deduplication reference map, including nested generics."""
+    
+    def resolve_model_reference(annotation: Any) -> Any:
+        """Resolve references in the model recursively, including nested types."""
+        origin = get_origin(annotation)
+        args = get_args(annotation)
+
+        # Handle Union, List, or any other generic types
+        if origin in {Union, list, List, Optional} and args:
+            # Recursively resolve references for the inner types
+            resolved_inner_types = tuple(resolve_model_reference(arg) for arg in args)
+            return origin[resolved_inner_types]
+
+        # Handle direct references in the reference_map
+        annotation_name = str(annotation).split('.')[-1].strip("'>")
+        if annotation_name in reference_map:
+            resolved_model = models[reference_map[annotation_name]]
+            return resolved_model
+
+        # If it's a normal type or not in the map, return as-is
+        return annotation
+
     updated_models = {}
 
     for model_name, model in models.items():
-        # If the model was deduplicated, update its reference
         if model_name in reference_map:
+            # If the model name is in the reference map, update its reference
             dedup_model_name = reference_map[model_name]
             updated_models[model_name] = models[dedup_model_name]
         else:
-            updated_models[model_name] = model
+            # Recursively resolve references in model annotations if they are generic
+            updated_models[model_name] = resolve_model_reference(model)
 
     return updated_models
+
+
 def join_url_paths(a: str, b: str) -> str:
     # Ensure the base path ends with a slash for urljoin to work properly
     return urljoin(a + '/', b.lstrip('/'))
 
 
-def create_config(spec: Dict[str, Any], output_path: str, base_url: str) -> None:
+def create_config(spec: Dict[str, Any], reference_map: Dict[str, str], output_path: str, base_url: str) -> None:
     # Extract paths and components from the spec
-    class_name = sanitize_name(spec["info"]["title"])
+    class_name = sanitize_name(map_deduplicated_name(spec["info"]["title"], reference_map))
     paths = spec.get("paths", {})
     components = spec.get("components", {}).get("schemas", {})
 
@@ -755,14 +779,16 @@ def create_config(spec: Dict[str, Any], output_path: str, base_url: str) -> None
         for method, details in methods.items():
             operation_id = details.get("operationId")
             if operation_id:
-                response_content = details["responses"]["200"]
-                if "content" not in response_content:
-                    continue
-                model_name = get_model_name_from_path(details, response_content)
-                if not model_name:
-                    continue
                 # Strip the base_url from the full URL to leave just the path
                 path_uri = join_url_paths(api_path, path.replace(base_url, ""))
+                response_content = details["responses"]["200"]
+                if "content" not in response_content:
+                    config_lines.append(f"    '{operation_id}': {{'uri': '{path_uri}', 'model': ''}},\n")
+                    continue
+                model_name = map_deduplicated_name(get_model_name_from_path(details, response_content), reference_map)
+                if not model_name:
+                    continue
+                
                 config_lines.append(f"    '{operation_id}': {{'uri': '{path_uri}', 'model': '{model_name}'}},\n")
 
     config_lines.append("}\n")
@@ -782,9 +808,9 @@ def classify_parameters(parameters: List[Dict[str, Any]]) -> Tuple[List[str], Li
     query_params = [param['name'] for param in parameters if param['in'] == 'query']
     return path_params, query_params
 
-def create_class(spec: Dict[str, Any], output_path: str) -> None:
+def create_class(spec: Dict[str, Any], reference_map: Dict[str, str], output_path: str) -> None:
     paths = spec.get("paths", {})
-    class_name = sanitize_name(spec["info"]["title"])
+    class_name = sanitize_name(map_deduplicated_name(spec["info"]["title"], reference_map))
     
     class_lines = []
     class_lines.append("from ..Client import Client\n")
@@ -806,7 +832,7 @@ def create_class(spec: Dict[str, Any], output_path: str) -> None:
                 response_content = details["responses"]["200"]
                 if "content" not in response_content:
                     continue
-                model_name = get_model_name_from_path(details, response_content)
+                model_name = map_deduplicated_name(get_model_name_from_path(details, response_content), reference_map)
                 if not model_name:
                     continue
 
@@ -877,7 +903,7 @@ def create_function_parameters(parameters: List[Dict[str, Any]]) -> str:
     )
     return param_str
 
-def save_classes(specs: List[Dict[str, Any]], base_path: str, base_url: str) -> None:
+def save_classes(specs: List[Dict[str, Any]], base_path: str, reference_map: Dict[str, str],  base_url: str) -> None:
     """Create config and class files for each spec in the specs list."""
     init_file_path = os.path.join(base_path, "__init__.py")
     with open(init_file_path, "w") as init_file:
@@ -885,7 +911,7 @@ def save_classes(specs: List[Dict[str, Any]], base_path: str, base_url: str) -> 
         init_file.write("\nfrom .rest_client import RestClient\n")
         init_file.write("from .package_models import ApiError, ResponseModel\n")
         init_file.write("__all__ = [\n")
-        init_file.write(",\n".join([f"    '{sanitize_name(get_api_name(spec))}'" for spec in specs]))
+        init_file.write(",\n".join([f"    '{sanitize_name(map_deduplicated_name(get_api_name(spec), reference_map))}'" for spec in specs]))
         init_file.write(",\n    'RestClient',\n    'ApiError',\n    'ResponseModel'\n]\n")
         
     for spec in specs:
@@ -893,12 +919,15 @@ def save_classes(specs: List[Dict[str, Any]], base_path: str, base_url: str) -> 
         logging.info(f"Creating config and class files for {api_name}...")
 
         # Create config and class for each spec
-        create_config(spec, base_path, base_url)
-        create_class(spec, base_path)
+        create_config(spec, reference_map, base_path, base_url)
+        create_class(spec, reference_map, base_path)
 
     logging.info("All classes and configs saved.")
 
-
+def map_deduplicated_name(type_name: str, reference_map: Dict[str, str]) -> str:
+    if type_name in reference_map:
+        return reference_map[type_name]
+    return type_name
 
 # Main function
 def main(spec_path: str, output_path: str):
@@ -931,12 +960,12 @@ def main(spec_path: str, output_path: str):
 
     # Now save the deduplicated models
     logging.info("Saving models to files...")
-    save_models(deduplicated_models, output_path, dependency_graph, circular_models)
+    save_models(models, output_path, dependency_graph, circular_models)
 
     # Create config and class
     logging.info("Creating config and class files...")
     base_url = "https://api.tfl.gov.uk"
-    save_classes(specs, output_path, base_url)
+    save_classes(specs, output_path, reference_map, base_url)
     
     logging.info("Creating Mermaid class diagram...")
     create_mermaid_class_diagram(dependency_graph, sorted_models, os.path.join(output_path, "class_diagram.mmd"))

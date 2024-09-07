@@ -111,7 +111,189 @@
                     }
                 }
             }
+        },
+        "/{day}": {
+            "get": {
+                "tags": [
+                    "AccidentStats"
+                ],
+                "summary": "Gets all accident details for accidents occuring in the specified year",
+                "description": "Gets all accident details for accidents occuring in the specified year",
+                "operationId": "ArrayResponseType",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "description": "Format - int32. The year for which to filter the accidents on.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 2017
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray"
+                                },
+                                "example": "abc"
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {                                    
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-1"
+                                    }
+                                },
+                                "example": [
+                                    {
+                                        "id": 0,
+                                        "lat": 0,
+                                        "lon": 0,
+                                        "location": "string",
+                                        "date": "string",
+                                        "severity": "string",
+                                        "borough": "string",
+                                        "casualties": [
+                                            {
+                                                "age": 0,
+                                                "class": "string",
+                                                "severity": "string",
+                                                "mode": "string",
+                                                "ageBand": "string"
+                                            }
+                                        ],
+                                        "vehicles": [
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-2"
+                                },
+                                "example": "<Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-2> <id>0</id> <lat>0</lat> <lon>0</lon> <location>string</location> <date>string</date> <severity>string</severity> <borough>string</borough> <casualties> <age>0</age> <class>string</class> <severity>string</severity> <mode>string</mode> <ageBand>string</ageBand> </casualties> <vehicles> <type>string</type> </vehicles> </Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-2>"
+                            },
+                            "text/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-3"
+                                },
+                                "example": "<Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-3> <id>0</id> <lat>0</lat> <lon>0</lon> <location>string</location> <date>string</date> <severity>string</severity> <borough>string</borough> <casualties> <age>0</age> <class>string</class> <severity>string</severity> <mode>string</mode> <ageBand>string</ageBand> </casualties> <vehicles> <type>string</type> </vehicles> </Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-3>"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{dup}": {
+            "get": {
+                "tags": [
+                    "AccidentStats"
+                ],
+                "summary": "Gets all accident details for accidents occuring in the specified year",
+                "description": "Gets all accident details for accidents occuring in the specified year",
+                "operationId": "dup_method",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "description": "Format - int32. The year for which to filter the accidents on.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 2017
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-3"
+                                },
+                                "example": [
+                                    {
+                                        "id": 0,
+                                        "lat": 0,
+                                        "lon": 0,
+                                        "location": "string",
+                                        "date": "string",
+                                        "severity": "string",
+                                        "borough": "string",
+                                        "casualties": [
+                                            {
+                                                "age": 0,
+                                                "class": "string",
+                                                "severity": "string",
+                                                "mode": "string",
+                                                "ageBand": "string"
+                                            }
+                                        ],
+                                        "vehicles": [
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-1"
+                                },
+                                "example": [
+                                    {
+                                        "id": 0,
+                                        "lat": 0,
+                                        "lon": 0,
+                                        "location": "string",
+                                        "date": "string",
+                                        "severity": "string",
+                                        "borough": "string",
+                                        "casualties": [
+                                            {
+                                                "age": 0,
+                                                "class": "string",
+                                                "severity": "string",
+                                                "mode": "string",
+                                                "ageBand": "string"
+                                            }
+                                        ],
+                                        "vehicles": [
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-2"
+                                },
+                                "example": "<Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-2> <id>0</id> <lat>0</lat> <lon>0</lon> <location>string</location> <date>string</date> <severity>string</severity> <borough>string</borough> <casualties> <age>0</age> <class>string</class> <severity>string</severity> <mode>string</mode> <ageBand>string</ageBand> </casualties> <vehicles> <type>string</type> </vehicles> </Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-2>"
+                            },
+                            "text/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-3"
+                                },
+                                "example": "<Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-3> <id>0</id> <lat>0</lat> <lon>0</lon> <location>string</location> <date>string</date> <severity>string</severity> <borough>string</borough> <casualties> <age>0</age> <class>string</class> <severity>string</severity> <mode>string</mode> <ageBand>string</ageBand> </casualties> <vehicles> <type>string</type> </vehicles> </Tfl-Api-Presentation-Entities-AccidentStats-AccidentDetailArray-3>"
+                            }
+                        }
+                    }
+                }
+            }
         }
+
     },
     "components": {
         "schemas": {
