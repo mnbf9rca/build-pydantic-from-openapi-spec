@@ -1,6 +1,6 @@
 from pydantic import RootModel
+from .PlaceCategory import PlaceCategory
 from typing import List
-from typing import PlaceCategory
 
 
 class ArrayOfPlaceCategories(RootModel[List[PlaceCategory]]):

@@ -1,6 +1,6 @@
 from pydantic import RootModel
+from .StatusSeverity import StatusSeverity
 from typing import List
-from typing import StatusSeverity
 
 
 class ArrayOfStatusSeverities(RootModel[List[StatusSeverity]]):

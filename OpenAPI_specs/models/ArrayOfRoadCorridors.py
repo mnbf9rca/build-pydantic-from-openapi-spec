@@ -1,6 +1,6 @@
 from pydantic import RootModel
+from .RoadCorridor import RoadCorridor
 from typing import List
-from typing import RoadCorridor
 
 
 class ArrayOfRoadCorridors(RootModel[List[RoadCorridor]]):

@@ -1,5 +1,5 @@
 from pydantic import RootModel
-from typing import ActiveServiceType
+from .ActiveServiceType import ActiveServiceType
 from typing import List
 
 

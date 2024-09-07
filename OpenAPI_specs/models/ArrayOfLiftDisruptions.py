@@ -1,5 +1,5 @@
 from pydantic import RootModel
-from typing import LiftDisruption
+from .LiftDisruption import LiftDisruption
 from typing import List
 
 

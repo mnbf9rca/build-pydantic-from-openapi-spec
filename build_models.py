@@ -198,7 +198,7 @@ def save_models(
         for model_name, model in models.items():
             save_model_file(model_name, model, models, models_dir, dependency_graph, circular_models, init_f)
 
-        init_f.write(f"\n__all__ = [\n    {',\n    '.join(models.keys())}\n]\n")
+        init_f.write(f"\n__all__ = [\n    {',\n    '.join(f'\"{key}\"' for key in models.keys())}\n]\n")
 
     # Write enums after saving the models
     write_enum_files(models, models_dir)
@@ -257,6 +257,8 @@ def handle_list_model(mf, model, models, dependency_graph, circular_models, sani
     # Define the list model using RootModel
     mf.write(f"class {sanitized_model_name}(RootModel[List[{inner_type.__name__}]]):\n")
 
+    # an alternative way to define the list model using BaseModel
+    # but this makes it harder to pass e.g. the response from a request to the model
     # mf.write(f"class {sanitized_model_name}(BaseModel):\n")
     # mf.write(f"    data: List[{inner_type.__name__}] = Field(..., alias='data')\n")
 
@@ -402,11 +404,11 @@ def save_config(config: Dict[str, Dict[str, str]], file_path: str):
         json.dump(config, f, indent=4)
 
 
-def create_mermaid_class_diagram(dependency_graph: Dict[str, Set[str]], output_file: str):
+def create_mermaid_class_diagram(dependency_graph: Dict[str, Set[str]], sort_order: List, output_file: str):
     with open(output_file, "w") as f:
         f.write("classDiagram\n")
-        for model, dependencies in dependency_graph.items():
-            for dep in dependencies:
+        for model in sort_order:
+            for dep in dependency_graph.get(model, []):
                 f.write(f"    {model} --> {dep}\n")
 
 
@@ -471,49 +473,49 @@ def build_dependency_graph(models: Dict[str, Union[Type[BaseModel], Type[List]]]
 
 def handle_dependencies(models: Dict[str, Type[BaseModel]]):
     graph = build_dependency_graph(models)
-    # sorted_models = topological_sort(graph)
+    sorted_models = topological_sort(graph)
     circular_models = detect_circular_dependencies(graph)
     break_circular_dependencies(models, circular_models)
-    return graph, circular_models
+    return graph, circular_models, sorted_models
 
 
-# def topological_sort(graph: Dict[str, Set[str]]) -> List[str]:
-#     # Exclude Python built-in types from the graph
-#     built_in_types = {"str", "int", "float", "bool", "List", "Dict", "Optional", "Union", "Any"}
+def topological_sort(graph: Dict[str, Set[str]]) -> List[str]:
+    # Exclude Python built-in types from the graph
+    built_in_types = {"str", "int", "float", "bool", "List", "Dict", "Optional", "Union", "Any"}
 
-#     # Filter out built-in types from the graph
-#     in_degree = {model: 0 for model in graph if model not in built_in_types}
+    # Filter out built-in types from the graph
+    in_degree = {model: 0 for model in graph if model not in built_in_types}
 
-#     for model, deps in graph.items():
-#         if model in built_in_types:
-#             continue  # Skip built-in types
+    for model, deps in graph.items():
+        if model in built_in_types:
+            continue  # Skip built-in types
 
-#         for dep in deps:
-#             if dep not in built_in_types:
-#                 if dep not in in_degree:
-#                     in_degree[dep] = 0
-#                 in_degree[dep] += 1
+        for dep in deps:
+            if dep not in built_in_types:
+                if dep not in in_degree:
+                    in_degree[dep] = 0
+                in_degree[dep] += 1
 
-#     # Initialize the queue with nodes that have an in-degree of 0
-#     queue = deque([model for model in in_degree if in_degree[model] == 0])
-#     sorted_models = []
+    # Initialize the queue with nodes that have an in-degree of 0
+    queue = deque([model for model in in_degree if in_degree[model] == 0])
+    sorted_models = []
 
-#     while queue:
-#         model = queue.popleft()
-#         sorted_models.append(model)
-#         for dep in graph[model]:
-#             if dep in built_in_types:
-#                 continue  # Skip built-in types
-#             in_degree[dep] -= 1
-#             if in_degree[dep] == 0:
-#                 queue.append(dep)
+    while queue:
+        model = queue.popleft()
+        sorted_models.append(model)
+        for dep in graph[model]:
+            if dep in built_in_types:
+                continue  # Skip built-in types
+            in_degree[dep] -= 1
+            if in_degree[dep] == 0:
+                queue.append(dep)
 
-#     if len(sorted_models) != len(in_degree):
-#         missing_models = set(in_degree.keys()) - set(sorted_models)
-#         logging.warning(f"Circular dependencies detected among models: {missing_models}")
-#         sorted_models.extend(missing_models)
+    if len(sorted_models) != len(in_degree):
+        missing_models = set(in_degree.keys()) - set(sorted_models)
+        logging.warning(f"Circular dependencies detected among models: {missing_models}")
+        sorted_models.extend(missing_models)
 
-#     return sorted_models
+    return sorted_models
 
 
 def detect_circular_dependencies(graph: Dict[str, Set[str]]) -> Set[str]:
@@ -682,7 +684,7 @@ def main(base_path: str):
     models = update_model_references(deduplicated_models, reference_map)
 
     logging.info("Handling dependencies...")
-    dependency_graph, circular_models = handle_dependencies(models)
+    dependency_graph, circular_models, sorted_models = handle_dependencies(models)
 
     # Now save the deduplicated models
     logging.info("Saving models to files...")
@@ -694,7 +696,7 @@ def main(base_path: str):
     # save_config(config, os.path.join(base_path, "config.json"))
 
     logging.info("Creating Mermaid class diagram...")
-    create_mermaid_class_diagram(dependency_graph, os.path.join(base_path, "class_diagram.mmd"))
+    create_mermaid_class_diagram(dependency_graph, sorted_models, os.path.join(base_path, "class_diagram.mmd"))
 
     logging.info("Processing complete.")
 

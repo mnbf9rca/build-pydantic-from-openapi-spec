@@ -1,6 +1,6 @@
 from pydantic import RootModel
+from .Mode import Mode
 from typing import List
-from typing import Mode
 
 
 class ArrayOfModes(RootModel[List[Mode]]):
