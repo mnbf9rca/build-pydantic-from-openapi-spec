@@ -1,41 +1,45 @@
 classDiagram
-    RouteSequence --> StopPointSequence
     RouteSequence --> OrderedRoute
     RouteSequence --> MatchedStop
+    RouteSequence --> StopPointSequence
     RouteSearchResponse --> RouteSearchMatch
     TimetableResponse --> Disambiguation
-    TimetableResponse --> Timetable
     TimetableResponse --> MatchedStop
+    TimetableResponse --> Timetable
     CarParkOccupancy --> Bay
     SearchResponse --> SearchMatch
-    LineServiceType --> LineSpecificServiceType
-    ArrivalDeparture --> PredictionTiming
     StopPointsResponse --> StopPoint
+    ItineraryResult --> JourneyPlannerCycleHireDockingStationData
     ItineraryResult --> SearchCriteria
-    ItineraryResult --> Line
     ItineraryResult --> JourneyVector
     ItineraryResult --> Journey
-    ItineraryResult --> JourneyPlannerCycleHireDockingStationData
-    ArrayOfModes --> Mode
+    ItineraryResult --> Line
+    ModeArray --> Mode
     ArrayOfStatusSeverities --> StatusSeverity
-    ArrayOfLines --> Line
-    ArrayOfStopPoints --> StopPoint
+    ArrayOfLine --> Line
+    StopPointArray --> StopPoint
     ArrayOfDisruptions --> Disruption
-    ArrayOfPredictions --> Prediction
+    PredictionArray --> Prediction
     ArrayOfActiveServiceTypes --> ActiveServiceType
-    ArrayOfPlaceCategories --> PlaceCategory
-    ArrayOfPlaces --> Place
+    PlaceCategoryArray --> PlaceCategory
+    PlaceArray --> Place
     AccidentDetailArray --> AccidentDetail
     ArrayOfLiftDisruptions --> LiftDisruption
     ArrayOfRoadCorridors --> RoadCorridor
     ArrayOfRoadDisruptions --> RoadDisruption
+    ChargeConnectorOccupancyArray --> ChargeConnectorOccupancy
+    BikePointOccupancyArray --> BikePointOccupancy
+    StopPointCategoryArray --> PlaceCategory
+    LineServiceTypeArray --> LineServiceType
+    ArrivalDepartureArray --> ArrivalDeparture
+    StopPointRouteSectionArray --> StopPointRouteSection
+    DisruptedPointArray --> DisruptedPoint
     StopPointSequence --> MatchedStop
     RouteSearchMatch --> MatchedRouteSections
-    RouteSearchMatch --> LineRouteSection
     RouteSearchMatch --> MatchedStop
+    RouteSearchMatch --> LineRouteSection
     Disambiguation --> DisambiguationOption
     Timetable --> TimetableRoute
-    LineSpecificServiceType --> LineServiceTypeInfo
     SearchCriteria --> TimeAdjustments
     Journey --> Leg
     Journey --> JourneyFare
@@ -47,38 +51,41 @@ classDiagram
     Prediction --> PredictionTiming
     AccidentDetail --> Casualty
     AccidentDetail --> Vehicle
-    RoadDisruption --> RoadProject
-    RoadDisruption --> RoadDisruptionSchedule
-    RoadDisruption --> Street
     RoadDisruption --> DbGeography
-    RoadDisruption --> RoadDisruptionImpactArea
+    RoadDisruption --> RoadProject
+    RoadDisruption --> Street
     RoadDisruption --> RoadDisruptionLine
+    RoadDisruption --> RoadDisruptionSchedule
+    RoadDisruption --> RoadDisruptionImpactArea
+    LineServiceType --> LineSpecificServiceType
+    ArrivalDeparture --> PredictionTiming
     MatchedStop --> Identifier
-    TimetableRoute --> Schedule
     TimetableRoute --> StationInterval
+    TimetableRoute --> Schedule
     TimeAdjustments --> TimeAdjustment
-    Leg --> PlannedWork
     Leg --> Instruction
-    Leg --> Point
+    Leg --> PlannedWork
     Leg --> Obstacle
+    Leg --> Identifier
     Leg --> RouteOption
     Leg --> Path
     Leg --> Disruption
-    Leg --> Identifier
+    Leg --> Point
     JourneyFare --> Fare
     JourneyFare --> FareCaveat
     LineStatus --> ValidityPeriod
     LineStatus --> Disruption
     Street --> StreetSegment
-    RoadDisruptionImpactArea --> DbGeography
     RoadDisruptionLine --> DbGeography
+    RoadDisruptionImpactArea --> DbGeography
+    LineSpecificServiceType --> LineServiceTypeInfo
+    StationInterval --> Interval
     Schedule --> Period
     Schedule --> KnownJourney
-    StationInterval --> Interval
     Instruction --> InstructionStep
     RouteOption --> Identifier
-    Path --> JpElevation
     Path --> Identifier
+    Path --> JpElevation
     Fare --> FareTap
     Disruption --> StopPoint
     Disruption --> RouteSection
@@ -89,13 +96,13 @@ classDiagram
     FareTap --> FareTapDetails
     RouteSection --> RouteSectionNaptanEntrySequence
     RouteSectionNaptanEntrySequence --> StopPoint
-    StopPoint --> Place
     StopPoint --> LineModeGroup
-    StopPoint --> LineGroup
     StopPoint --> AdditionalProperties
     StopPoint --> Identifier
+    StopPoint --> LineGroup
+    StopPoint --> Place
     Identifier --> Crowding
-    Crowding --> PassengerFlow
     Crowding --> TrainLoading
+    Crowding --> PassengerFlow
     Place --> AdditionalProperties
     Place --> Place
