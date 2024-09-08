@@ -222,7 +222,7 @@ def create_generic_response_model() -> Type[RootModel]:
     return GenericResponseModel
 
 # Save models and config to files
-def determine_typing_imports(model_fields: Dict[str, FieldInfo], models: Dict[str, Type[BaseModel] | type], circular_models: Set[str]) -> Set[str]:
+def determine_typing_imports(model_fields: Dict[str, FieldInfo], models: Dict[str, Type[BaseModel] | type], circular_models: Set[str]) -> List[str]:
     """Determine necessary typing imports based on the field annotations."""
     import_set = set()
     
@@ -334,7 +334,7 @@ def handle_list_or_dict_model(mf, model, models, dependency_graph, circular_mode
     # Write typing imports
     if typing_imports:
 
-        typing_imports = typing_imports - get_builtin_types()
+        typing_imports = sorted(typing_imports - get_builtin_types())
         mf.write(f"from typing import {', '.join(sorted(typing_imports))}\n")
     
     # Write module imports
@@ -353,7 +353,7 @@ def handle_regular_model(mf, model: BaseModel, models: Dict[str, Any], dependenc
     is_root_model = isinstance(model, type) and issubclass(model, RootModel)
 
     # Determine necessary imports
-    typing_imports = determine_typing_imports(model.model_fields, models, circular_models) - get_builtin_types()
+    typing_imports = sorted(determine_typing_imports(model.model_fields, models, circular_models) - get_builtin_types())
     
     import_set = {f"from typing import {', '.join(typing_imports)}"}
 
@@ -888,7 +888,7 @@ def create_class(spec: Dict[str, Any], output_path: str) -> None:
                     path_lines.append(f"        return self._send_request_and_deserialize(endpoints['{operation_id}'], {query_params_dict})\n\n")
 
     valid_type_imports = all_types - get_builtin_types()
-    valid_type_import_strings = [t.__name__ for t in valid_type_imports]
+    valid_type_import_strings = sorted([t.__name__ for t in valid_type_imports])
     if valid_type_import_strings:
         class_lines.append(f"from typing import {', '.join(valid_type_import_strings)}\n\n")
     
@@ -952,7 +952,7 @@ def save_classes(specs: List[Dict[str, Any]], base_path: str, base_url: str) -> 
     class_names = [f"{sanitize_name(get_api_name(spec))}Client" for spec in specs]    
     init_file_path = os.path.join(base_path, "__init__.py")
     with open(init_file_path, "w") as init_file:
-        init_file.write(f"# {init_file_path}\n")
+        # init_file.write(f"# {init_file_path}\n")
         init_file.write(f"from .endpoints import (\n    {',\n    '.join(class_names)}\n)\n")
         # init_file.write("\n".join([f"from .endpoints.{name} import {name}" for name in class_names]))
         init_file.write("\nfrom .rest_client import RestClient\n")
@@ -965,7 +965,7 @@ def save_classes(specs: List[Dict[str, Any]], base_path: str, base_url: str) -> 
     os.makedirs(endpoint_path, exist_ok=True)
     endpoint_init_file = os.path.join(endpoint_path, "__init__.py")
     with open(endpoint_init_file, "w") as endpoint_init:
-        endpoint_init.write(f"# {endpoint_init_file}\n")
+        # endpoint_init.write(f"# {endpoint_init_file}\n")
         endpoint_init.write("\n".join([f"from .{name} import {name}" for name in class_names]))
         endpoint_init.write("\n__all__ = [\n")
         endpoint_init.write(",\n".join([f"    '{name}'" for name in class_names]))
