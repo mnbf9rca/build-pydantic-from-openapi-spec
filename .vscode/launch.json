@@ -9,6 +9,10 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/build_models.py",
+            "args": [
+                "${workspaceFolder}/OpenAPI_specs",
+                "${workspaceFolder}/app"
+            ],
             "console": "integratedTerminal",
             "preLaunchTask": "copy model files to code folder"
         },

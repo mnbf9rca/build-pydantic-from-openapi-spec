@@ -553,11 +553,17 @@ def build_dependency_graph(models: Dict[str, Union[Type[BaseModel], Type[List]]]
                                 graph[model_name].add(sanitize_name(nested_type.__name__))
 
         # Handle List models (arrays)
-        elif hasattr(model, "__origin__") and model.__origin__ is list:
+        elif hasattr(model, "__origin__") and (model.__origin__ is list or model.__origin__ is dict):
             inner_type = model.__args__[0]
             if hasattr(inner_type, "__name__") and inner_type.__name__ in models:
                 graph[model_name].add(sanitize_name(inner_type.__name__))
+        else:
+            logging.warning(f"Model '{model_name}' is not a Pydantic model, dict or list type")
 
+    # finally, add any models which have zero dependencies
+    for model_name in models.keys():
+        if model_name not in graph:
+            graph[model_name] = set()
     return graph
 
 
