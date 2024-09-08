@@ -6,6 +6,7 @@ import re
 import keyword
 import builtins
 import argparse
+from collections import deque
 from urllib.parse import urljoin
 
 from typing import __all__ as typing_all
@@ -494,12 +495,19 @@ def get_type_str(annotation: Any, models: Dict[str, Type[BaseModel]]) -> str:
     return "Any"
 
 
-def create_mermaid_class_diagram(dependency_graph: Dict[str, Set[str]], sort_order: List, output_file: str):
+def create_mermaid_class_diagram(dependency_graph: Dict[str, Set[str]], sort_order: List[str], output_file: str):
     with open(output_file, "w") as f:
         f.write("classDiagram\n")
         for model in sort_order:
-            for dep in dependency_graph.get(model, []):
-                f.write(f"    {model} --> {dep}\n")
+            if model in dependency_graph:
+                dependencies = dependency_graph[model]
+                if dependencies:
+                    for dep in dependencies:
+                        f.write(f"    {model} --> {dep}\n")
+                else:
+                    f.write(f"    class {model}\n")
+            else:
+                f.write(f"    class {model}\n")
 
 
 # Dependency handling and circular references
@@ -577,37 +585,38 @@ def handle_dependencies(models: Dict[str, Type[BaseModel]]):
 
 def topological_sort(graph: Dict[str, Set[str]]) -> List[str]:
     # Exclude Python built-in types from the graph
-    built_in_types = {"str", "int", "float", "bool", "List", "Dict", "Optional", "Union", "Any"}
+    built_in_types = get_builtin_types()
 
     # Filter out built-in types from the graph
-    in_degree = {model: 0 for model in graph if model not in built_in_types}
+    in_degree = {model: 0 for model in sorted(graph) if model not in built_in_types}
 
-    for model, deps in graph.items():
+    for model in sorted(graph):
         if model in built_in_types:
             continue  # Skip built-in types
 
-        for dep in deps:
+        for dep in sorted(graph[model]):
             if dep not in built_in_types:
                 if dep not in in_degree:
                     in_degree[dep] = 0
                 in_degree[dep] += 1
 
     # Initialize the queue with nodes that have an in-degree of 0
-    queue = deque([model for model in in_degree if in_degree[model] == 0])
+    queue = sorted([model for model in in_degree if in_degree[model] == 0])
     sorted_models = []
 
     while queue:
-        model = queue.popleft()
+        model = queue.pop(0)  # Use pop(0) instead of popleft() for deterministic behavior
         sorted_models.append(model)
-        for dep in graph[model]:
+        for dep in sorted(graph[model]):
             if dep in built_in_types:
                 continue  # Skip built-in types
             in_degree[dep] -= 1
             if in_degree[dep] == 0:
                 queue.append(dep)
+        queue.sort()  # Sort the queue after each iteration
 
     if len(sorted_models) != len(in_degree):
-        missing_models = set(in_degree.keys()) - set(sorted_models)
+        missing_models = sorted(set(in_degree.keys()) - set(sorted_models))
         logging.warning(f"Circular dependencies detected among models: {missing_models}")
         sorted_models.extend(missing_models)
 
