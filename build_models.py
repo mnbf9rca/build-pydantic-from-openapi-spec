@@ -347,36 +347,46 @@ def handle_list_or_dict_model(mf, model, models, dependency_graph, circular_mode
 
 
 def handle_regular_model(mf, model: BaseModel, models: Dict[str, Any], dependency_graph: Dict[str, set], circular_models: set, sanitized_model_name: str):
-    if hasattr(model, "model_fields"):
-        # Determine necessary imports for regular models
-        typing_imports = determine_typing_imports(model.model_fields, models, circular_models) - get_builtin_types()
-        import_set = {f"from typing import {', '.join(typing_imports)}"}
-        # TODO check this
+    # Check if the model is a RootModel
+    is_root_model = isinstance(model, type) and issubclass(model, RootModel)
 
-        # Write imports for referenced models
-        referenced_models = dependency_graph.get(sanitized_model_name, set())
-        for ref_model in referenced_models:
-            if ref_model != sanitized_model_name and ref_model not in {"Optional", "List", "Union"}:
-                import_set.add(f"from .{ref_model} import {ref_model}")
+    # Determine necessary imports
+    typing_imports = determine_typing_imports(model.model_fields, models, circular_models) - get_builtin_types()
+    
+    import_set = {f"from typing import {', '.join(typing_imports)}"}
 
-        # Add Enum imports
-        import_set.update(find_enum_imports(model, models))
+    # Add RootModel import if necessary
+    if is_root_model:
+        import_set.add("from pydantic import RootModel")
+    else:
+        import_set.add("from pydantic import BaseModel, Field")
 
-        # Write imports
-        mf.write("\n".join(sorted(import_set)) + "\n\n\n")
+    # Write imports for referenced models
+    referenced_models = dependency_graph.get(sanitized_model_name, set())
+    for ref_model in referenced_models:
+        if ref_model != sanitized_model_name and ref_model not in {"Optional", "List", "Union"}:
+            import_set.add(f"from .{ref_model} import {ref_model}")
 
-        # Write class definition
+    # Add Enum imports
+    import_set.update(find_enum_imports(model, models))
+
+    # Write imports
+    mf.write("\n".join(sorted(import_set)) + "\n\n\n")
+
+    # Write class definition
+    if is_root_model:
+        mf.write(f"class {sanitized_model_name}(RootModel[{model.model_fields['root'].annotation.__name__}]):\n")
+    else:
         mf.write(f"class {sanitized_model_name}(BaseModel):\n")
         write_model_fields(mf, model, models, circular_models, sanitized_model_name)
 
-        # Pydantic model config
-        mf.write("\n    class Config:\n")
-        mf.write("        from_attributes = True\n")
+    # Pydantic model config
+    mf.write("\n    class Config:\n")
+    mf.write("        from_attributes = True\n")
 
-        # Add model_rebuild() if circular dependencies exist
-        if sanitized_model_name in circular_models:
-            mf.write(f"\n{sanitized_model_name}.model_rebuild()\n")
-
+    # Add model_rebuild() if circular dependencies exist
+    if sanitized_model_name in circular_models:
+        mf.write(f"\n{sanitized_model_name}.model_rebuild()\n")
 
 def find_enum_imports(model: Any, models: Dict[str, Type[BaseModel]]) -> Set[str]:
     """Find all enum imports in the model fields."""
@@ -778,7 +788,7 @@ def join_url_paths(a: str, b: str) -> str:
 
 
 def create_config(spec: Dict[str, Any], output_path: str, base_url: str) -> None:
-    class_name = sanitize_name(get_api_name(spec))
+    class_name = f"{sanitize_name(get_api_name(spec))}Client"
     paths = spec.get("paths", {})
     
     config_lines = []
@@ -820,7 +830,7 @@ def classify_parameters(parameters: List[Dict[str, Any]]) -> Tuple[List[str], Li
 
 def create_class(spec: Dict[str, Any], output_path: str) -> None:
     paths = spec.get("paths", {})
-    class_name = sanitize_name(get_api_name(spec))
+    class_name = f"{sanitize_name(get_api_name(spec))}Client"
     
     class_lines = []
     class_lines.append("from ..Client import Client\n")
@@ -931,11 +941,11 @@ def create_function_parameters(parameters: List[Dict[str, Any]]) -> str:
 def save_classes(specs: List[Dict[str, Any]], base_path: str, base_url: str) -> None:
     """Create config and class files for each spec in the specs list."""
 
-    class_names = [sanitize_name(get_api_name(spec)) for spec in specs]    
+    class_names = [f"{sanitize_name(get_api_name(spec))}Client" for spec in specs]    
     init_file_path = os.path.join(base_path, "__init__.py")
     with open(init_file_path, "w") as init_file:
         init_file.write(f"# {init_file_path}\n")
-        init_file.write(f"from .endpoints import ({', '.join(class_names)})\n")
+        init_file.write(f"from .endpoints import (\n    {',\n    '.join(class_names)}\n)\n")
         # init_file.write("\n".join([f"from .endpoints.{name} import {name}" for name in class_names]))
         init_file.write("\nfrom .rest_client import RestClient\n")
         init_file.write("from .package_models import ApiError\n")
