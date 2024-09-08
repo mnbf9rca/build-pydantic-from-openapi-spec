@@ -206,22 +206,49 @@ def create_pydantic_models(components: Dict[str, Any], models: Dict[str, Type[Ba
                 logging.warning(f"Array model {sanitized_name} has no valid 'items' reference. Using List[Any].")
 
 
+def create_generic_response_model() -> Type[RootModel]:
+    class GenericResponseModel(RootModel):
+        root: Any
+
+        class Config:
+            arbitrary_types_allowed = True
+
+    return GenericResponseModel
+
 # Save models and config to files
-def determine_typing_imports(model_fields: dict[str, FieldInfo], models: dict[str, Type[BaseModel] | type], circular_models: set) -> set:
-    """Determine necessary typing imports based on the field annotation."""
+def determine_typing_imports(model_fields: Dict[str, FieldInfo], models: Dict[str, Type[BaseModel] | type], circular_models: Set[str]) -> Set[str]:
+    """Determine necessary typing imports based on the field annotations."""
     import_set = set()
     
     for field in model_fields.values():
         field_annotation = get_type_str(field.annotation, models)
-        if "Optional" in field_annotation:
-            import_set.add("Optional")
-        if "List" in field_annotation:
-            import_set.add("List")
-        if "Union" in field_annotation:
-            import_set.add("Union")
+        
+        # Check for common types
+        for type_name in ["Optional", "List", "Union", "Any", "Dict", "Tuple", "Set", "Literal"]:
+            if type_name in field_annotation:
+                import_set.add(type_name)
+        
+        # Check for less common but possible types
+        for type_name in ["Sequence", "Mapping", "Iterable", "Callable"]:
+            if type_name in field_annotation:
+                import_set.add(type_name)
+        
+        # Check for datetime types
+        if "datetime" in field_annotation.lower():
+            import_set.add("datetime")
+        
+        # Check for UUID
+        if "UUID" in field_annotation:
+            import_set.add("UUID")
+        
+        # Check for circular references
         if field_annotation in circular_models:
             import_set.add("ForwardRef")
         
+        # Check for TypeVar (used in generic types)
+        if "TypeVar" in field_annotation:
+            import_set.add("TypeVar")
+
     return import_set
 
 
@@ -763,13 +790,10 @@ def join_url_paths(a: str, b: str) -> str:
     return urljoin(a + '/', b.lstrip('/'))
 
 
-def create_config(spec: Dict[str, Any], reference_map: Dict[str, str], output_path: str, base_url: str) -> None:
-    # Extract paths and components from the spec
-    class_name = sanitize_name(map_deduplicated_name(spec["info"]["title"], reference_map))
+def create_config(spec: Dict[str, Any], output_path: str, base_url: str) -> None:
+    class_name = get_api_name(spec)
     paths = spec.get("paths", {})
-    components = spec.get("components", {}).get("schemas", {})
-
-    # Create the config content
+    
     config_lines = []
     api_path = "/" + spec.get("servers", [{}])[0].get("url", "").split('/', 3)[3]
     config_lines.append(f'base_url = "{base_url}"\n')
@@ -779,22 +803,24 @@ def create_config(spec: Dict[str, Any], reference_map: Dict[str, str], output_pa
         for method, details in methods.items():
             operation_id = details.get("operationId")
             if operation_id:
-                # Strip the base_url from the full URL to leave just the path
-                path_uri = join_url_paths(api_path, path.replace(base_url, ""))
-                response_content = details["responses"]["200"]
-                if "content" not in response_content:
-                    config_lines.append(f"    '{operation_id}': {{'uri': '{path_uri}', 'model': ''}},\n")
-                    continue
-                model_name = map_deduplicated_name(get_model_name_from_path(details, response_content), reference_map)
-                if not model_name:
-                    continue
+                # Replace named placeholders with numbered ones
+                path_uri = join_url_paths(api_path, path)
+                path_params = [param['name'] for param in details.get('parameters', []) if param['in'] == 'path']
+                for i, param in enumerate(path_params):
+                    path_uri = path_uri.replace(f"{{{param}}}", f"{{{i}}}")
+
+                response_content = details["responses"].get("200", {})
+                
+                if "content" in response_content and "application/json" in response_content["content"]:
+                    model_name = get_model_name_from_path(details, response_content)
+                else:
+                    model_name = "GenericResponseModel"
                 
                 config_lines.append(f"    '{operation_id}': {{'uri': '{path_uri}', 'model': '{model_name}'}},\n")
 
     config_lines.append("}\n")
 
-    # Write the config to the output file
-    config_file_path = os.path.join(output_path, "endpoints",  f"{class_name}_config.py")
+    config_file_path = os.path.join(output_path, "endpoints", f"{class_name}_config.py")
     os.makedirs(os.path.dirname(config_file_path), exist_ok=True)
 
     with open(config_file_path, "w") as config_file:
@@ -808,9 +834,9 @@ def classify_parameters(parameters: List[Dict[str, Any]]) -> Tuple[List[str], Li
     query_params = [param['name'] for param in parameters if param['in'] == 'query']
     return path_params, query_params
 
-def create_class(spec: Dict[str, Any], reference_map: Dict[str, str], output_path: str) -> None:
+def create_class(spec: Dict[str, Any], output_path: str) -> None:
     paths = spec.get("paths", {})
-    class_name = sanitize_name(map_deduplicated_name(spec["info"]["title"], reference_map))
+    class_name = get_api_name(spec)
     
     class_lines = []
     class_lines.append("from ..Client import Client\n")
@@ -825,24 +851,19 @@ def create_class(spec: Dict[str, Any], reference_map: Dict[str, str], output_pat
         for method, details in methods.items():
             operation_id = details.get("operationId")
             if operation_id:
-                parameters: List[Dict[str, Any]] = details.get("parameters", [])
+                parameters = details.get("parameters", [])
                 all_types.update([map_openapi_type(param["schema"]["type"]) for param in parameters])
                 
                 param_str = create_function_parameters(parameters)
-                response_content = details["responses"]["200"]
-                if "content" not in response_content:
-                    continue
-                model_name = map_deduplicated_name(get_model_name_from_path(details, response_content), reference_map)
-                if not model_name:
-                    continue
-
-                # Classify parameters into path and query
-                path_params, query_params = classify_parameters(parameters)
+                response_content = details["responses"].get("200", {})
                 
-                # Add function definition
+                if "content" in response_content and "application/json" in response_content["content"]:
+                    model_name = get_model_name_from_path(details, response_content)
+                else:
+                    model_name = "GenericResponseModel"
+
                 path_lines.append(f"    def {operation_id.lower()}(self, {param_str}) -> models.{model_name} | ApiError:\n")
 
-                # Add docstring
                 docstring = details.get("description", "No description available.")
                 if parameters:
                     docstring_parameters = "\n".join([f"        {param['name']}: {map_openapi_type(param['schema']['type']).__name__} - {param.get('description', '')}. Example: {param.get('example', 'None given')}" for param in parameters])
@@ -850,7 +871,9 @@ def create_class(spec: Dict[str, Any], reference_map: Dict[str, str], output_pat
                     docstring_parameters = "        No parameters required."
                 path_lines.append(f"        '''\n        {docstring}\n\n        Parameters:\n{docstring_parameters}\n        '''\n")
 
-                # Generate the call to `_send_request_and_deserialize`
+                path_params, query_params = classify_parameters(parameters)
+                
+                # Ensure path parameters are in the correct order
                 formatted_path_params = ", ".join(path_params)
                 formatted_query_params = ", ".join([f"'{param}': {param}" for param in query_params])
                 
@@ -864,13 +887,11 @@ def create_class(spec: Dict[str, Any], reference_map: Dict[str, str], output_pat
                 else:
                     path_lines.append(f"        return self._send_request_and_deserialize(endpoints['{operation_id}'], {query_params_dict})\n\n")
 
-    # Import types from typing
     valid_type_imports = all_types - get_builtin_types()
     valid_type_import_strings = [t.__name__ for t in valid_type_imports]
     if valid_type_import_strings:
         class_lines.append(f"from typing import {', '.join(valid_type_import_strings)}\n\n")
     
-    # Write the class to the output file
     class_file_path = os.path.join(output_path, "endpoints", f"{class_name}.py")
     os.makedirs(os.path.dirname(class_file_path), exist_ok=True)
     with open(class_file_path, "w") as class_file:
@@ -878,6 +899,7 @@ def create_class(spec: Dict[str, Any], reference_map: Dict[str, str], output_pat
         class_file.writelines(path_lines)
 
     logging.info(f"Class file generated at: {class_file_path}")
+
 
 def get_model_name_from_path(details, response_content, only_arrays: bool = False) -> str:
     response_type = response_content["content"]["application/json"]["schema"].get("type", "")
@@ -902,25 +924,24 @@ def create_function_parameters(parameters: List[Dict[str, Any]]) -> str:
         ]
     )
     return param_str
-
-def save_classes(specs: List[Dict[str, Any]], base_path: str, reference_map: Dict[str, str],  base_url: str) -> None:
+def save_classes(specs: List[Dict[str, Any]], output_path: str, base_url: str) -> None:
     """Create config and class files for each spec in the specs list."""
-    init_file_path = os.path.join(base_path, "__init__.py")
+    init_file_path = os.path.join(output_path, "__init__.py")
     with open(init_file_path, "w") as init_file:
-        init_file.write("\n".join([f"from .endpoints.{sanitize_name(get_api_name(spec))} import {sanitize_name(get_api_name(spec))}" for spec in specs]))
+        class_names = [get_api_name(spec) for spec in specs]
+        init_file.write("\n".join([f"from .endpoints.{name} import {name}" for name in class_names]))
         init_file.write("\nfrom .rest_client import RestClient\n")
-        init_file.write("from .package_models import ApiError, ResponseModel\n")
+        init_file.write("from .package_models import ApiError\n")
         init_file.write("__all__ = [\n")
-        init_file.write(",\n".join([f"    '{sanitize_name(map_deduplicated_name(get_api_name(spec), reference_map))}'" for spec in specs]))
-        init_file.write(",\n    'RestClient',\n    'ApiError',\n    'ResponseModel'\n]\n")
+        init_file.write(",\n".join([f"    '{name}'" for name in class_names]))
+        init_file.write(",\n    'RestClient',\n    'ApiError'\n]\n")
         
     for spec in specs:
         api_name = get_api_name(spec)
         logging.info(f"Creating config and class files for {api_name}...")
 
-        # Create config and class for each spec
-        create_config(spec, reference_map, base_path, base_url)
-        create_class(spec, reference_map, base_path)
+        create_config(spec, output_path, base_url)
+        create_class(spec, output_path)
 
     logging.info("All classes and configs saved.")
 
@@ -985,6 +1006,10 @@ def main(spec_path: str, output_path: str):
     models = {}
     create_pydantic_models(combined_components, models)
 
+    logging.info("Creating generic response model...")
+    generic_model = create_generic_response_model()
+    models["GenericResponseModel"] = generic_model    
+
     # Deduplicate models before saving them
     logging.info("Deduplicating models...")
     deduplicated_models, reference_map = deduplicate_models(models)
@@ -1005,7 +1030,7 @@ def main(spec_path: str, output_path: str):
     logging.info("Updating specs with model changes...")
     updated_specs = update_specs_with_model_changes(specs, combined_components, reference_map)
 
-    save_classes(updated_specs, output_path, reference_map, base_url)
+    save_classes(updated_specs, output_path, base_url)
     
     logging.info("Creating Mermaid class diagram...")
     create_mermaid_class_diagram(dependency_graph, sorted_models, os.path.join(output_path, "class_diagram.mmd"))
