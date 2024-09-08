@@ -1,7 +1,7 @@
 classDiagram
     AccidentDetailArray --> AccidentDetail
-    AccidentDetail --> Vehicle
     AccidentDetail --> Casualty
+    AccidentDetail --> Vehicle
     ActiveServiceTypesArray --> ActiveServiceType
     class ActiveServiceType
     ArrivalDepartureArray --> ArrivalDeparture
@@ -17,38 +17,38 @@ classDiagram
     class DisruptedPoint
     DisruptionsArray --> Disruption
     class GenericResponseModel
-    ItineraryResult --> Line
-    ItineraryResult --> JourneyVector
     ItineraryResult --> Journey
-    ItineraryResult --> SearchCriteria
     ItineraryResult --> JourneyPlannerCycleHireDockingStationData
-    Journey --> Leg
+    ItineraryResult --> JourneyVector
+    ItineraryResult --> Line
+    ItineraryResult --> SearchCriteria
     Journey --> JourneyFare
-    JourneyFare --> FareCaveat
+    Journey --> Leg
     JourneyFare --> Fare
+    JourneyFare --> FareCaveat
     Fare --> FareTap
     class FareCaveat
     FareTap --> FareTapDetails
     class FareTapDetails
     class JourneyPlannerCycleHireDockingStationData
     class JourneyVector
-    Leg --> Instruction
+    Leg --> Disruption
     Leg --> Identifier
+    Leg --> Instruction
+    Leg --> Obstacle
+    Leg --> Path
     Leg --> PlannedWork
     Leg --> Point
-    Leg --> Path
-    Leg --> Disruption
     Leg --> RouteOption
-    Leg --> Obstacle
     Instruction --> InstructionStep
     InstructionStep --> PathAttribute
     LiftDisruptionsArray --> LiftDisruption
     class LiftDisruption
     LineArray --> Line
     Line --> Crowding
-    Line --> LineStatus
-    Line --> LineServiceTypeInfo
     Line --> Disruption
+    Line --> LineServiceTypeInfo
+    Line --> LineStatus
     Line --> MatchedRoute
     LineServiceTypeArray --> LineServiceType
     LineServiceType --> LineSpecificServiceType
@@ -79,12 +79,12 @@ classDiagram
     RoadCorridorsArray --> RoadCorridor
     class RoadCorridor
     RoadDisruptionsArray --> RoadDisruption
-    RoadDisruption --> RoadDisruptionLine
-    RoadDisruption --> RoadProject
-    RoadDisruption --> RoadDisruptionImpactArea
     RoadDisruption --> DbGeography
-    RoadDisruption --> Street
+    RoadDisruption --> RoadDisruptionImpactArea
+    RoadDisruption --> RoadDisruptionLine
     RoadDisruption --> RoadDisruptionSchedule
+    RoadDisruption --> RoadProject
+    RoadDisruption --> Street
     RoadDisruptionImpactArea --> DbGeography
     RoadDisruptionLine --> DbGeography
     DbGeography --> DbGeographyWellKnownValue
@@ -93,16 +93,16 @@ classDiagram
     class RoadProject
     RouteOption --> Identifier
     RouteSearchResponse --> RouteSearchMatch
-    RouteSearchMatch --> MatchedRouteSections
     RouteSearchMatch --> LineRouteSection
+    RouteSearchMatch --> MatchedRouteSections
     RouteSearchMatch --> MatchedStop
     class LineRouteSection
     class MatchedRouteSections
     RouteSection --> RouteSectionNaptanEntrySequence
     RouteSectionNaptanEntrySequence --> StopPoint
     RouteSequence --> MatchedStop
-    RouteSequence --> StopPointSequence
     RouteSequence --> OrderedRoute
+    RouteSequence --> StopPointSequence
     class OrderedRoute
     SearchCriteria --> TimeAdjustments
     SearchResponse --> SearchMatch
@@ -116,11 +116,11 @@ classDiagram
     class StopPointRouteSection
     StopPointSequence --> MatchedStop
     StopPointsResponse --> StopPoint
+    StopPoint --> AdditionalProperties
     StopPoint --> Identifier
+    StopPoint --> LineGroup
     StopPoint --> LineModeGroup
     StopPoint --> Place
-    StopPoint --> AdditionalProperties
-    StopPoint --> LineGroup
     class LineGroup
     class LineModeGroup
     Street --> StreetSegment
@@ -128,8 +128,8 @@ classDiagram
     class StringsArray
     TimeAdjustments --> TimeAdjustment
     class TimeAdjustment
-    TimetableResponse --> MatchedStop
     TimetableResponse --> Disambiguation
+    TimetableResponse --> MatchedStop
     TimetableResponse --> Timetable
     Disambiguation --> DisambiguationOption
     class DisambiguationOption
@@ -155,5 +155,5 @@ classDiagram
     class Vehicle
     class VehicleMatch
     class AdditionalProperties
-    Place --> Place
     Place --> AdditionalProperties
+    Place --> Place

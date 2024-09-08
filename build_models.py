@@ -500,7 +500,7 @@ def create_mermaid_class_diagram(dependency_graph: Dict[str, Set[str]], sort_ord
         f.write("classDiagram\n")
         for model in sort_order:
             if model in dependency_graph:
-                dependencies = dependency_graph[model]
+                dependencies = sorted(dependency_graph[model])
                 if dependencies:
                     for dep in dependencies:
                         f.write(f"    {model} --> {dep}\n")
