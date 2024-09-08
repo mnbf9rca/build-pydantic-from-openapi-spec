@@ -6,7 +6,7 @@ import keyword
 import builtins
 from urllib.parse import urljoin
 
-
+from typing import __all__ as typing_all
 
 from enum import Enum
 from typing import Dict, Any, Optional, Union, Type, List, Set, get_origin, get_args, Literal, ForwardRef, Tuple
@@ -29,10 +29,14 @@ def sanitize_name(name: str) -> str:
     3. Prepend 'Model_' if the name starts with a number or is a Python keyword.
     """
     # Replace invalid characters (like hyphens) with underscores
-    sanitized = re.sub(r"[^a-zA-Z0-9_ ]", "_", name).replace(" ", "_")
+    sanitized = re.sub(r"[^a-zA-Z0-9_ ]", "_", name)
 
     # Extract the portion after the last underscore for concise names
     sanitized = sanitized.split("_")[-1]
+
+    # Convert to CamelCase
+    words = sanitized.split()
+    sanitized = words[0] + ''.join(word.capitalize() for word in words[1:])
 
     # Always prepend 'Model_' to ensure names are valid and don't conflict with Python keywords
     if sanitized[0].isdigit() or keyword.iskeyword(sanitized):
@@ -223,31 +227,14 @@ def determine_typing_imports(model_fields: Dict[str, FieldInfo], models: Dict[st
     for field in model_fields.values():
         field_annotation = get_type_str(field.annotation, models)
         
-        # Check for common types
-        for type_name in ["Optional", "List", "Union", "Any", "Dict", "Tuple", "Set", "Literal"]:
+        # Check for any type in typing.__all__
+        for type_name in typing_all:
             if type_name in field_annotation:
                 import_set.add(type_name)
-        
-        # Check for less common but possible types
-        for type_name in ["Sequence", "Mapping", "Iterable", "Callable"]:
-            if type_name in field_annotation:
-                import_set.add(type_name)
-        
-        # Check for datetime types
-        if "datetime" in field_annotation.lower():
-            import_set.add("datetime")
-        
-        # Check for UUID
-        if "UUID" in field_annotation:
-            import_set.add("UUID")
-        
+
         # Check for circular references
         if field_annotation in circular_models:
             import_set.add("ForwardRef")
-        
-        # Check for TypeVar (used in generic types)
-        if "TypeVar" in field_annotation:
-            import_set.add("TypeVar")
 
     return import_set
 
@@ -791,7 +778,7 @@ def join_url_paths(a: str, b: str) -> str:
 
 
 def create_config(spec: Dict[str, Any], output_path: str, base_url: str) -> None:
-    class_name = get_api_name(spec)
+    class_name = sanitize_name(get_api_name(spec))
     paths = spec.get("paths", {})
     
     config_lines = []
@@ -803,7 +790,6 @@ def create_config(spec: Dict[str, Any], output_path: str, base_url: str) -> None
         for method, details in methods.items():
             operation_id = details.get("operationId")
             if operation_id:
-                # Replace named placeholders with numbered ones
                 path_uri = join_url_paths(api_path, path)
                 path_params = [param['name'] for param in details.get('parameters', []) if param['in'] == 'path']
                 for i, param in enumerate(path_params):
@@ -811,22 +797,20 @@ def create_config(spec: Dict[str, Any], output_path: str, base_url: str) -> None
 
                 response_content = details["responses"].get("200", {})
                 
-                if "content" in response_content and "application/json" in response_content["content"]:
-                    model_name = get_model_name_from_path(details, response_content)
-                else:
-                    model_name = "GenericResponseModel"
+                model_name = get_model_name_from_path(response_content)
                 
                 config_lines.append(f"    '{operation_id}': {{'uri': '{path_uri}', 'model': '{model_name}'}},\n")
 
     config_lines.append("}\n")
 
-    config_file_path = os.path.join(output_path, "endpoints", f"{class_name}_config.py")
+    config_file_path = os.path.join(output_path, f"{class_name}_config.py")
     os.makedirs(os.path.dirname(config_file_path), exist_ok=True)
 
     with open(config_file_path, "w") as config_file:
         config_file.writelines(config_lines)
 
     logging.info(f"Config file generated at: {config_file_path}")
+
 
 def classify_parameters(parameters: List[Dict[str, Any]]) -> Tuple[List[str], List[str]]:
     """Classify parameters into path and query parameters."""
@@ -836,7 +820,7 @@ def classify_parameters(parameters: List[Dict[str, Any]]) -> Tuple[List[str], Li
 
 def create_class(spec: Dict[str, Any], output_path: str) -> None:
     paths = spec.get("paths", {})
-    class_name = get_api_name(spec)
+    class_name = sanitize_name(get_api_name(spec))
     
     class_lines = []
     class_lines.append("from ..Client import Client\n")
@@ -857,25 +841,23 @@ def create_class(spec: Dict[str, Any], output_path: str) -> None:
                 param_str = create_function_parameters(parameters)
                 response_content = details["responses"].get("200", {})
                 
-                if "content" in response_content and "application/json" in response_content["content"]:
-                    model_name = get_model_name_from_path(details, response_content)
-                else:
-                    model_name = "GenericResponseModel"
+                model_name = get_model_name_from_path(response_content)
 
-                path_lines.append(f"    def {operation_id.lower()}(self, {param_str}) -> models.{model_name} | ApiError:\n")
+                # Sanitize the operation_id to ensure it's a valid Python identifier
+                sanitized_operation_id = sanitize_name(operation_id)
+                path_lines.append(f"    def {sanitized_operation_id.lower()}(self, {param_str}) -> models.{model_name} | ApiError:\n")
 
                 docstring = details.get("description", "No description available.")
                 if parameters:
-                    docstring_parameters = "\n".join([f"        {param['name']}: {map_openapi_type(param['schema']['type']).__name__} - {param.get('description', '')}. Example: {param.get('example', 'None given')}" for param in parameters])
+                    docstring_parameters = "\n".join([f"        {sanitize_field_name(param['name'])}: {map_openapi_type(param['schema']['type']).__name__} - {param.get('description', '')}. Example: {param.get('example', 'None given')}" for param in parameters])
                 else:
                     docstring_parameters = "        No parameters required."
                 path_lines.append(f"        '''\n        {docstring}\n\n        Parameters:\n{docstring_parameters}\n        '''\n")
 
                 path_params, query_params = classify_parameters(parameters)
                 
-                # Ensure path parameters are in the correct order
-                formatted_path_params = ", ".join(path_params)
-                formatted_query_params = ", ".join([f"'{param}': {param}" for param in query_params])
+                formatted_path_params = ", ".join([sanitize_field_name(param) for param in path_params])
+                formatted_query_params = ", ".join([f"'{param}': {sanitize_field_name(param)}" for param in query_params])
                 
                 if formatted_query_params:
                     query_params_dict = f"endpoint_args={{ {formatted_query_params} }}"
@@ -892,7 +874,7 @@ def create_class(spec: Dict[str, Any], output_path: str) -> None:
     if valid_type_import_strings:
         class_lines.append(f"from typing import {', '.join(valid_type_import_strings)}\n\n")
     
-    class_file_path = os.path.join(output_path, "endpoints", f"{class_name}.py")
+    class_file_path = os.path.join(output_path,  f"{class_name}.py")
     os.makedirs(os.path.dirname(class_file_path), exist_ok=True)
     with open(class_file_path, "w") as class_file:
         class_file.writelines(class_lines)
@@ -900,48 +882,83 @@ def create_class(spec: Dict[str, Any], output_path: str) -> None:
 
     logging.info(f"Class file generated at: {class_file_path}")
 
+def get_model_name_from_path(response_content: Dict[str, Any], only_arrays: bool = False) -> str:
+    if not response_content or "content" not in response_content:
+        return "GenericResponseModel"
+    
+    content = response_content["content"]
+    if "application/json" not in content:
+        return "GenericResponseModel"
+    
+    json_content = content["application/json"]
+    if "schema" not in json_content:
+        return "GenericResponseModel"
 
-def get_model_name_from_path(details, response_content, only_arrays: bool = False) -> str:
-    response_type = response_content["content"]["application/json"]["schema"].get("type", "")
+    schema = json_content["schema"]
+    response_type = schema.get("type", "")
+
     if response_type == "array":
-        model_ref = response_content["content"]["application/json"]["schema"]["items"].get("$ref", "")
-        return get_array_model_name(sanitize_name(model_ref.split("/")[-1])) if model_ref else ""
+        items_schema = schema.get("items", {})
+        model_ref = items_schema.get("$ref", "")
+        if not model_ref:
+            return "GenericResponseModel"
+        return get_array_model_name(sanitize_name(model_ref.split("/")[-1]))
     elif not only_arrays:
-        model_ref = details["responses"]["200"]["content"]["application/json"]["schema"].get("$ref", "")
-        return model_ref.split("/")[-1] if model_ref else ""
+        model_ref = schema.get("$ref", "")
+        if not model_ref:
+            return "GenericResponseModel"
+        return sanitize_name(model_ref.split("/")[-1])
+    else:
+        return "GenericResponseModel"
 
 
 def create_function_parameters(parameters: List[Dict[str, Any]]) -> str:
+    """Create a string of function parameters, ensuring they are safe Python identifiers."""
     # Sort parameters to ensure required ones come first
     sorted_parameters = sorted(parameters, key=lambda param: not param.get("required", False))
     
     param_str = ", ".join(
         [
-            f"{param['name']}: {map_openapi_type(param['schema']['type']).__name__} | None = None"
+            f"{sanitize_field_name(param['name'])}: {map_openapi_type(param['schema']['type']).__name__} | None = None"
             if not param.get("required", False)
-            else f"{param['name']}: {map_openapi_type(param['schema']['type']).__name__}"
+            else f"{sanitize_field_name(param['name'])}: {map_openapi_type(param['schema']['type']).__name__}"
             for param in sorted_parameters
         ]
     )
     return param_str
-def save_classes(specs: List[Dict[str, Any]], output_path: str, base_url: str) -> None:
+
+
+def save_classes(specs: List[Dict[str, Any]], base_path: str, base_url: str) -> None:
     """Create config and class files for each spec in the specs list."""
-    init_file_path = os.path.join(output_path, "__init__.py")
+
+    class_names = [sanitize_name(get_api_name(spec)) for spec in specs]    
+    init_file_path = os.path.join(base_path, "__init__.py")
     with open(init_file_path, "w") as init_file:
-        class_names = [get_api_name(spec) for spec in specs]
-        init_file.write("\n".join([f"from .endpoints.{name} import {name}" for name in class_names]))
+        init_file.write(f"# {init_file_path}\n")
+        init_file.write(f"from .endpoints import ({', '.join(class_names)})\n")
+        # init_file.write("\n".join([f"from .endpoints.{name} import {name}" for name in class_names]))
         init_file.write("\nfrom .rest_client import RestClient\n")
         init_file.write("from .package_models import ApiError\n")
         init_file.write("__all__ = [\n")
         init_file.write(",\n".join([f"    '{name}'" for name in class_names]))
         init_file.write(",\n    'RestClient',\n    'ApiError'\n]\n")
+
+    endpoint_path = os.path.join(base_path, "endpoints")
+    os.makedirs(endpoint_path, exist_ok=True)
+    endpoint_init_file = os.path.join(endpoint_path, "__init__.py")
+    with open(endpoint_init_file, "w") as endpoint_init:
+        endpoint_init.write(f"# {endpoint_init_file}\n")
+        endpoint_init.write("\n".join([f"from .{name} import {name}" for name in class_names]))
+        endpoint_init.write("\n__all__ = [\n")
+        endpoint_init.write(",\n".join([f"    '{name}'" for name in class_names]))
+        endpoint_init.write("\n]\n")
         
     for spec in specs:
         api_name = get_api_name(spec)
         logging.info(f"Creating config and class files for {api_name}...")
 
-        create_config(spec, output_path, base_url)
-        create_class(spec, output_path)
+        create_config(spec, endpoint_path, base_url)
+        create_class(spec, endpoint_path)
 
     logging.info("All classes and configs saved.")
 
