@@ -3,7 +3,7 @@ from .MatchedStop import MatchedStop
 from .OrderedRoute import OrderedRoute
 from .StopPointSequence import StopPointSequence
 from pydantic import BaseModel, Field
-from typing import List, Sequence, Match, Optional
+from typing import List, Match, Optional, Sequence
 
 
 class RouteSequence(BaseModel):

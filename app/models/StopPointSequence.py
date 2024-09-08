@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from .MatchedStop import MatchedStop
 from .ServiceTypeEnum import ServiceTypeEnum
 from pydantic import BaseModel, Field
-from typing import List, Type, Match, Optional
+from typing import List, Match, Optional, Type
 
 
 class StopPointSequence(BaseModel):

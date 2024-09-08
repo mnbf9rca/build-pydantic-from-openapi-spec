@@ -3,7 +3,7 @@ from .Crowding import Crowding
 from .RouteTypeEnum import RouteTypeEnum
 from .StatusEnum import StatusEnum
 from pydantic import BaseModel, Field
-from typing import Type, Optional
+from typing import Optional, Type
 
 
 class Identifier(BaseModel):

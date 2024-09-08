@@ -1,4 +1,3 @@
-# app/__init__.py
 from .endpoints import (
     LineClient,
     OccupancyClient,

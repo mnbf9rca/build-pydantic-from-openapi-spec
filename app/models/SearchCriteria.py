@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from .DateTimeTypeEnum import DateTimeTypeEnum
 from .TimeAdjustments import TimeAdjustments
 from pydantic import BaseModel, Field
-from typing import Type, Optional
+from typing import Optional, Type
 
 
 class SearchCriteria(BaseModel):

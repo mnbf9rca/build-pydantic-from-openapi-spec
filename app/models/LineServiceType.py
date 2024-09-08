@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from .LineSpecificServiceType import LineSpecificServiceType
 from pydantic import BaseModel, Field
-from typing import Type, List, Optional
+from typing import List, Optional, Type
 
 
 class LineServiceType(BaseModel):

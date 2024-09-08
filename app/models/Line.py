@@ -5,7 +5,7 @@ from .LineServiceTypeInfo import LineServiceTypeInfo
 from .LineStatus import LineStatus
 from .MatchedRoute import MatchedRoute
 from pydantic import BaseModel, Field
-from typing import List, Type, Match, Optional
+from typing import List, Match, Optional, Type
 
 
 class Line(BaseModel):

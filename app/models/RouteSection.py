@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from .RouteSectionNaptanEntrySequence import RouteSectionNaptanEntrySequence
 from pydantic import BaseModel, Field
-from typing import List, Sequence, Optional
+from typing import List, Optional, Sequence
 
 
 class RouteSection(BaseModel):

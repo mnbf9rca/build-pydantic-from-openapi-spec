@@ -3,7 +3,7 @@ from .PathAttribute import PathAttribute
 from .SkyDirectionDescriptionEnum import SkyDirectionDescriptionEnum
 from .TrackTypeEnum import TrackTypeEnum
 from pydantic import BaseModel, Field
-from typing import Type, Optional
+from typing import Optional, Type
 
 
 class InstructionStep(BaseModel):

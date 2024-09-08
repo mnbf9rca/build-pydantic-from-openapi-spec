@@ -1,4 +1,3 @@
-# app/endpoints/__init__.py
 from .LineClient import LineClient
 from .OccupancyClient import OccupancyClient
 from .VehicleClient import VehicleClient

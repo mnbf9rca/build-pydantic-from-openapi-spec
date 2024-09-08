@@ -3,7 +3,7 @@ from .ServiceFrequency import ServiceFrequency
 from .TwentyFourHourClockTime import TwentyFourHourClockTime
 from .TypeEnum import TypeEnum
 from pydantic import BaseModel, Field
-from typing import Type, Optional
+from typing import Optional, Type
 
 
 class Period(BaseModel):
