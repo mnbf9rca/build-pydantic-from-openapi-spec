@@ -1,108 +1,159 @@
 classDiagram
-    RouteSequence --> OrderedRoute
-    RouteSequence --> MatchedStop
-    RouteSequence --> StopPointSequence
-    RouteSearchResponse --> RouteSearchMatch
-    TimetableResponse --> MatchedStop
-    TimetableResponse --> Disambiguation
-    TimetableResponse --> Timetable
-    CarParkOccupancy --> Bay
-    SearchResponse --> SearchMatch
-    StopPointsResponse --> StopPoint
-    ItineraryResult --> Line
-    ItineraryResult --> Journey
-    ItineraryResult --> JourneyPlannerCycleHireDockingStationData
-    ItineraryResult --> JourneyVector
-    ItineraryResult --> SearchCriteria
-    ModeArray --> Mode
-    ArrayOfStatusSeverities --> StatusSeverity
-    ArrayOfLine --> Line
-    StopPointArray --> StopPoint
-    ArrayOfDisruptions --> Disruption
-    PredictionArray --> Prediction
-    ArrayOfActiveServiceTypes --> ActiveServiceType
-    PlaceCategoryArray --> PlaceCategory
-    PlaceArray --> Place
     AccidentDetailArray --> AccidentDetail
-    ArrayOfLiftDisruptions --> LiftDisruption
-    ArrayOfRoadCorridors --> RoadCorridor
-    ArrayOfRoadDisruptions --> RoadDisruption
-    ChargeConnectorOccupancyArray --> ChargeConnectorOccupancy
-    BikePointOccupancyArray --> BikePointOccupancy
-    StopPointCategoryArray --> PlaceCategory
-    LineServiceTypeArray --> LineServiceType
-    ArrivalDepartureArray --> ArrivalDeparture
-    StopPointRouteSectionArray --> StopPointRouteSection
-    DisruptedPointArray --> DisruptedPoint
-    StopPointSequence --> MatchedStop
-    RouteSearchMatch --> LineRouteSection
-    RouteSearchMatch --> MatchedStop
-    RouteSearchMatch --> MatchedRouteSections
-    Disambiguation --> DisambiguationOption
-    Timetable --> TimetableRoute
-    Journey --> JourneyFare
-    Journey --> Leg
-    SearchCriteria --> TimeAdjustments
-    Line --> Crowding
-    Line --> MatchedRoute
-    Line --> LineServiceTypeInfo
-    Line --> LineStatus
-    Line --> Disruption
-    Prediction --> PredictionTiming
     AccidentDetail --> Vehicle
     AccidentDetail --> Casualty
-    RoadDisruption --> RoadDisruptionLine
-    RoadDisruption --> DbGeography
-    RoadDisruption --> RoadDisruptionImpactArea
-    RoadDisruption --> RoadDisruptionSchedule
-    RoadDisruption --> RoadProject
-    RoadDisruption --> Street
-    LineServiceType --> LineSpecificServiceType
+    ActiveServiceTypesArray --> ActiveServiceType
+    class ActiveServiceType
+    ArrivalDepartureArray --> ArrivalDeparture
     ArrivalDeparture --> PredictionTiming
-    MatchedStop --> Identifier
-    TimetableRoute --> Schedule
-    TimetableRoute --> StationInterval
-    JourneyFare --> Fare
+    BikePointOccupancyArray --> BikePointOccupancy
+    class BikePointOccupancy
+    CarParkOccupancy --> Bay
+    class Bay
+    class Casualty
+    ChargeConnectorOccupancyArray --> ChargeConnectorOccupancy
+    class ChargeConnectorOccupancy
+    DisruptedPointArray --> DisruptedPoint
+    class DisruptedPoint
+    DisruptionsArray --> Disruption
+    class GenericResponseModel
+    ItineraryResult --> Line
+    ItineraryResult --> JourneyVector
+    ItineraryResult --> Journey
+    ItineraryResult --> SearchCriteria
+    ItineraryResult --> JourneyPlannerCycleHireDockingStationData
+    Journey --> Leg
+    Journey --> JourneyFare
     JourneyFare --> FareCaveat
-    Leg --> Identifier
+    JourneyFare --> Fare
+    Fare --> FareTap
+    class FareCaveat
+    FareTap --> FareTapDetails
+    class FareTapDetails
+    class JourneyPlannerCycleHireDockingStationData
+    class JourneyVector
     Leg --> Instruction
-    Leg --> Point
+    Leg --> Identifier
     Leg --> PlannedWork
-    Leg --> RouteOption
-    Leg --> Obstacle
+    Leg --> Point
     Leg --> Path
     Leg --> Disruption
-    TimeAdjustments --> TimeAdjustment
+    Leg --> RouteOption
+    Leg --> Obstacle
+    Instruction --> InstructionStep
+    InstructionStep --> PathAttribute
+    LiftDisruptionsArray --> LiftDisruption
+    class LiftDisruption
+    LineArray --> Line
+    Line --> Crowding
+    Line --> LineStatus
+    Line --> LineServiceTypeInfo
+    Line --> Disruption
+    Line --> MatchedRoute
+    LineServiceTypeArray --> LineServiceType
+    LineServiceType --> LineSpecificServiceType
+    LineSpecificServiceType --> LineServiceTypeInfo
+    class LineServiceTypeInfo
     LineStatus --> Disruption
     LineStatus --> ValidityPeriod
-    RoadDisruptionLine --> DbGeography
-    RoadDisruptionImpactArea --> DbGeography
-    Street --> StreetSegment
-    LineSpecificServiceType --> LineServiceTypeInfo
-    Schedule --> Period
-    Schedule --> KnownJourney
-    StationInterval --> Interval
-    Fare --> FareTap
-    Instruction --> InstructionStep
-    RouteOption --> Identifier
-    Path --> Identifier
-    Path --> JpElevation
     Disruption --> RouteSection
     Disruption --> StopPoint
+    class LondonAirForecast
+    class MatchedRoute
+    ModeArray --> Mode
+    class Mode
+    class Object
+    class ObjectResponse
+    class Obstacle
+    Path --> Identifier
+    Path --> JpElevation
+    class JpElevation
+    class PathAttribute
+    PlaceArray --> Place
+    PlaceCategoryArray --> PlaceCategory
+    class PlannedWork
+    class Point
+    PredictionArray --> Prediction
+    Prediction --> PredictionTiming
+    class PredictionTiming
+    RoadCorridorsArray --> RoadCorridor
+    class RoadCorridor
+    RoadDisruptionsArray --> RoadDisruption
+    RoadDisruption --> RoadDisruptionLine
+    RoadDisruption --> RoadProject
+    RoadDisruption --> RoadDisruptionImpactArea
+    RoadDisruption --> DbGeography
+    RoadDisruption --> Street
+    RoadDisruption --> RoadDisruptionSchedule
+    RoadDisruptionImpactArea --> DbGeography
+    RoadDisruptionLine --> DbGeography
     DbGeography --> DbGeographyWellKnownValue
-    Period --> TwentyFourHourClockTime
-    Period --> ServiceFrequency
-    FareTap --> FareTapDetails
-    InstructionStep --> PathAttribute
+    class DbGeographyWellKnownValue
+    class RoadDisruptionSchedule
+    class RoadProject
+    RouteOption --> Identifier
+    RouteSearchResponse --> RouteSearchMatch
+    RouteSearchMatch --> MatchedRouteSections
+    RouteSearchMatch --> LineRouteSection
+    RouteSearchMatch --> MatchedStop
+    class LineRouteSection
+    class MatchedRouteSections
     RouteSection --> RouteSectionNaptanEntrySequence
     RouteSectionNaptanEntrySequence --> StopPoint
+    RouteSequence --> MatchedStop
+    RouteSequence --> StopPointSequence
+    RouteSequence --> OrderedRoute
+    class OrderedRoute
+    SearchCriteria --> TimeAdjustments
+    SearchResponse --> SearchMatch
+    class SearchMatch
+    StatusSeveritiesArray --> StatusSeverity
+    class StatusSeverity
+    StopPointArray --> StopPoint
+    StopPointCategoryArray --> PlaceCategory
+    class PlaceCategory
+    StopPointRouteSectionArray --> StopPointRouteSection
+    class StopPointRouteSection
+    StopPointSequence --> MatchedStop
+    StopPointsResponse --> StopPoint
     StopPoint --> Identifier
+    StopPoint --> LineModeGroup
     StopPoint --> Place
     StopPoint --> AdditionalProperties
     StopPoint --> LineGroup
-    StopPoint --> LineModeGroup
+    class LineGroup
+    class LineModeGroup
+    Street --> StreetSegment
+    class StreetSegment
+    class StringsArray
+    TimeAdjustments --> TimeAdjustment
+    class TimeAdjustment
+    TimetableResponse --> MatchedStop
+    TimetableResponse --> Disambiguation
+    TimetableResponse --> Timetable
+    Disambiguation --> DisambiguationOption
+    class DisambiguationOption
+    MatchedStop --> Identifier
     Identifier --> Crowding
     Crowding --> PassengerFlow
     Crowding --> TrainLoading
-    Place --> AdditionalProperties
+    class PassengerFlow
+    Timetable --> TimetableRoute
+    TimetableRoute --> Schedule
+    TimetableRoute --> StationInterval
+    Schedule --> KnownJourney
+    Schedule --> Period
+    class KnownJourney
+    Period --> ServiceFrequency
+    Period --> TwentyFourHourClockTime
+    class ServiceFrequency
+    StationInterval --> Interval
+    class Interval
+    class TrainLoading
+    class TwentyFourHourClockTime
+    class ValidityPeriod
+    class Vehicle
+    class VehicleMatch
+    class AdditionalProperties
     Place --> Place
+    Place --> AdditionalProperties

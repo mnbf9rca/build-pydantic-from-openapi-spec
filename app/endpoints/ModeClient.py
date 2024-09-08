@@ -4,7 +4,7 @@ from .. import models
 from ..package_models import ApiError
 
 class ModeClient(Client):
-    def getactiveservicetypes(self, ) -> models.ArrayOfActiveServiceTypes | ApiError:
+    def getactiveservicetypes(self, ) -> models.ActiveServiceTypesArray | ApiError:
         '''
         Returns the service type active for a mode.
             Currently only supports tube

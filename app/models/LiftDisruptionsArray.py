@@ -1,9 +1,9 @@
 from pydantic import RootModel
 from typing import List
-from .StatusSeverity import StatusSeverity
+from .LiftDisruption import LiftDisruption
 
 
-class ArrayOfStatusSeverities(RootModel[List[StatusSeverity]]):
+class LiftDisruptionsArray(RootModel[List[LiftDisruption]]):
     class Config:
         from_attributes = True
 

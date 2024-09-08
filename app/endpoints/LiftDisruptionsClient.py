@@ -4,7 +4,7 @@ from .. import models
 from ..package_models import ApiError
 
 class LiftDisruptionsClient(Client):
-    def get(self, ) -> models.ArrayOfLiftDisruptions | ApiError:
+    def get(self, ) -> models.LiftDisruptionsArray | ApiError:
         '''
         List of all currently disrupted lift routes
 

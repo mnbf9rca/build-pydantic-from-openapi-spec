@@ -13,7 +13,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_MetaModes'], endpoint_args=None)
 
-    def metaseverity(self, ) -> models.ArrayOfStatusSeverities | ApiError:
+    def metaseverity(self, ) -> models.StatusSeveritiesArray | ApiError:
         '''
         Gets a list of valid severity codes
 
@@ -22,7 +22,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_MetaSeverity'], endpoint_args=None)
 
-    def metadisruptioncategories(self, ) -> models.ArrayOfStrings | ApiError:
+    def metadisruptioncategories(self, ) -> models.StringsArray | ApiError:
         '''
         Gets a list of valid disruption categories
 
@@ -31,7 +31,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_MetaDisruptionCategories'], endpoint_args=None)
 
-    def metaservicetypes(self, ) -> models.ArrayOfStrings | ApiError:
+    def metaservicetypes(self, ) -> models.StringsArray | ApiError:
         '''
         Gets a list of valid ServiceTypes to filter on
 
@@ -40,7 +40,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_MetaServiceTypes'], endpoint_args=None)
 
-    def getbypathids(self, ids: str) -> models.ArrayOfLine | ApiError:
+    def getbypathids(self, ids: str) -> models.LineArray | ApiError:
         '''
         Gets lines that match the specified line ids.
 
@@ -49,7 +49,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_GetByPathIds'], params=[ids], endpoint_args=None)
 
-    def getbymodebypathmodes(self, modes: str) -> models.ArrayOfLine | ApiError:
+    def getbymodebypathmodes(self, modes: str) -> models.LineArray | ApiError:
         '''
         Gets lines that serve the given modes.
 
@@ -58,7 +58,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_GetByModeByPathModes'], params=[modes], endpoint_args=None)
 
-    def routebyqueryservicetypes(self, serviceTypes: str | None = None) -> models.ArrayOfLine | ApiError:
+    def routebyqueryservicetypes(self, serviceTypes: str | None = None) -> models.LineArray | ApiError:
         '''
         Get all valid routes for all lines, including the name and id of the originating and terminating stops for each route.
 
@@ -67,7 +67,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_RouteByQueryServiceTypes'], endpoint_args={ 'serviceTypes': serviceTypes })
 
-    def lineroutesbyidsbypathidsqueryservicetypes(self, ids: str, serviceTypes: str | None = None) -> models.ArrayOfLine | ApiError:
+    def lineroutesbyidsbypathidsqueryservicetypes(self, ids: str, serviceTypes: str | None = None) -> models.LineArray | ApiError:
         '''
         Get all valid routes for given line ids, including the name and id of the originating and terminating stops for each route.
 
@@ -77,7 +77,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_LineRoutesByIdsByPathIdsQueryServiceTypes'], params=[ids], endpoint_args={ 'serviceTypes': serviceTypes })
 
-    def routebymodebypathmodesqueryservicetypes(self, modes: str, serviceTypes: str | None = None) -> models.ArrayOfLine | ApiError:
+    def routebymodebypathmodesqueryservicetypes(self, modes: str, serviceTypes: str | None = None) -> models.LineArray | ApiError:
         '''
         Gets all lines and their valid routes for given modes, including the name and id of the originating and terminating stops for each route
 
@@ -99,7 +99,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_RouteSequenceByPathIdPathDirectionQueryServiceTypesQueryExcludeCrowding'], params=[id, direction], endpoint_args={ 'serviceTypes': serviceTypes, 'excludeCrowding': excludeCrowding })
 
-    def statusbypathidspathstartdatepathenddatequerydetail(self, ids: str, startDate: str, endDate: str, detail: bool | None = None) -> models.ArrayOfLine | ApiError:
+    def statusbypathidspathstartdatepathenddatequerydetail(self, ids: str, startDate: str, endDate: str, detail: bool | None = None) -> models.LineArray | ApiError:
         '''
         Gets the line status for given line ids during the provided dates e.g Minor Delays
 
@@ -111,7 +111,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_StatusByPathIdsPathStartDatePathEndDateQueryDetail'], params=[ids, startDate, endDate], endpoint_args={ 'detail': detail })
 
-    def statusbyidsbypathidsquerydetail(self, ids: str, detail: bool | None = None) -> models.ArrayOfLine | ApiError:
+    def statusbyidsbypathidsquerydetail(self, ids: str, detail: bool | None = None) -> models.LineArray | ApiError:
         '''
         Gets the line status of for given line ids e.g Minor Delays
 
@@ -132,7 +132,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_SearchByPathQueryQueryModesQueryServiceTypes'], params=[query], endpoint_args={ 'modes': modes, 'serviceTypes': serviceTypes })
 
-    def statusbyseveritybypathseverity(self, severity: int) -> models.ArrayOfLine | ApiError:
+    def statusbyseveritybypathseverity(self, severity: int) -> models.LineArray | ApiError:
         '''
         Gets the line status for all lines with a given severity A list of valid severity codes can be obtained from a call to Line/Meta/Severity
 
@@ -141,7 +141,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_StatusBySeverityByPathSeverity'], params=[severity], endpoint_args=None)
 
-    def statusbymodebypathmodesquerydetailqueryseveritylevel(self, modes: str, detail: bool | None = None, severityLevel: str | None = None) -> models.ArrayOfLine | ApiError:
+    def statusbymodebypathmodesquerydetailqueryseveritylevel(self, modes: str, detail: bool | None = None, severityLevel: str | None = None) -> models.LineArray | ApiError:
         '''
         Gets the line status of for all lines for the given modes
 
@@ -183,7 +183,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_TimetableToByPathFromStopPointIdPathIdPathToStopPointId'], params=[fromStopPointId, id, toStopPointId], endpoint_args=None)
 
-    def disruptionbypathids(self, ids: str) -> models.ArrayOfDisruptions | ApiError:
+    def disruptionbypathids(self, ids: str) -> models.DisruptionsArray | ApiError:
         '''
         Get disruptions for the given line ids
 
@@ -192,7 +192,7 @@ class LineClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Line_DisruptionByPathIds'], params=[ids], endpoint_args=None)
 
-    def disruptionbymodebypathmodes(self, modes: str) -> models.ArrayOfDisruptions | ApiError:
+    def disruptionbymodebypathmodes(self, modes: str) -> models.DisruptionsArray | ApiError:
         '''
         Get disruptions for all lines of the given modes.
 

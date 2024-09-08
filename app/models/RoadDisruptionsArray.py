@@ -1,9 +1,9 @@
 from pydantic import RootModel
 from typing import List
-from .Line import Line
+from .RoadDisruption import RoadDisruption
 
 
-class ArrayOfLine(RootModel[List[Line]]):
+class RoadDisruptionsArray(RootModel[List[RoadDisruption]]):
     class Config:
         from_attributes = True
 

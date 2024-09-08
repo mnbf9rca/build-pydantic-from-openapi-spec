@@ -22,7 +22,7 @@ class SearchClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Search_BusSchedulesByQueryQuery'], endpoint_args={ 'query': query })
 
-    def metasearchproviders(self, ) -> models.ArrayOfStrings | ApiError:
+    def metasearchproviders(self, ) -> models.StringsArray | ApiError:
         '''
         Gets the available searchProvider names.
 
@@ -31,7 +31,7 @@ class SearchClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Search_MetaSearchProviders'], endpoint_args=None)
 
-    def metacategories(self, ) -> models.ArrayOfStrings | ApiError:
+    def metacategories(self, ) -> models.StringsArray | ApiError:
         '''
         Gets the available search categories.
 
@@ -40,7 +40,7 @@ class SearchClient(Client):
         '''
         return self._send_request_and_deserialize(endpoints['Search_MetaCategories'], endpoint_args=None)
 
-    def metasorts(self, ) -> models.ArrayOfStrings | ApiError:
+    def metasorts(self, ) -> models.StringsArray | ApiError:
         '''
         Gets the available sorting options.
 

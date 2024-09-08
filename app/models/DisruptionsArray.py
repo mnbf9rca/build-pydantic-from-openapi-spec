@@ -1,9 +1,9 @@
 from pydantic import RootModel
 from typing import List
-from .RoadCorridor import RoadCorridor
+from .Disruption import Disruption
 
 
-class ArrayOfRoadCorridors(RootModel[List[RoadCorridor]]):
+class DisruptionsArray(RootModel[List[Disruption]]):
     class Config:
         from_attributes = True
 

@@ -94,19 +94,19 @@ from .RoadDisruptionImpactArea import RoadDisruptionImpactArea
 from .RoadDisruptionSchedule import RoadDisruptionSchedule
 from .RoadDisruption import RoadDisruption
 from .ModeArray import ModeArray
-from .ArrayOfStatusSeverities import ArrayOfStatusSeverities
-from .ArrayOfStrings import ArrayOfStrings
-from .ArrayOfLine import ArrayOfLine
+from .StatusSeveritiesArray import StatusSeveritiesArray
+from .StringsArray import StringsArray
+from .LineArray import LineArray
 from .StopPointArray import StopPointArray
-from .ArrayOfDisruptions import ArrayOfDisruptions
+from .DisruptionsArray import DisruptionsArray
 from .PredictionArray import PredictionArray
-from .ArrayOfActiveServiceTypes import ArrayOfActiveServiceTypes
+from .ActiveServiceTypesArray import ActiveServiceTypesArray
 from .PlaceCategoryArray import PlaceCategoryArray
 from .PlaceArray import PlaceArray
 from .AccidentDetailArray import AccidentDetailArray
-from .ArrayOfLiftDisruptions import ArrayOfLiftDisruptions
-from .ArrayOfRoadCorridors import ArrayOfRoadCorridors
-from .ArrayOfRoadDisruptions import ArrayOfRoadDisruptions
+from .LiftDisruptionsArray import LiftDisruptionsArray
+from .RoadCorridorsArray import RoadCorridorsArray
+from .RoadDisruptionsArray import RoadDisruptionsArray
 from .ChargeConnectorOccupancyArray import ChargeConnectorOccupancyArray
 from .BikePointOccupancyArray import BikePointOccupancyArray
 from .StopPointCategoryArray import StopPointCategoryArray
@@ -213,19 +213,19 @@ __all__ = [
     "RoadDisruptionSchedule",
     "RoadDisruption",
     "ModeArray",
-    "ArrayOfStatusSeverities",
-    "ArrayOfStrings",
-    "ArrayOfLine",
+    "StatusSeveritiesArray",
+    "StringsArray",
+    "LineArray",
     "StopPointArray",
-    "ArrayOfDisruptions",
+    "DisruptionsArray",
     "PredictionArray",
-    "ArrayOfActiveServiceTypes",
+    "ActiveServiceTypesArray",
     "PlaceCategoryArray",
     "PlaceArray",
     "AccidentDetailArray",
-    "ArrayOfLiftDisruptions",
-    "ArrayOfRoadCorridors",
-    "ArrayOfRoadDisruptions",
+    "LiftDisruptionsArray",
+    "RoadCorridorsArray",
+    "RoadDisruptionsArray",
     "ChargeConnectorOccupancyArray",
     "BikePointOccupancyArray",
     "StopPointCategoryArray",
