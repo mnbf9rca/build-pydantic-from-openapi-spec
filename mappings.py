@@ -30,7 +30,7 @@ tfl_mappings = {
     },
     "Lift Disruptions": {
         "LiftDisruption": "LiftDisruption",
-        "Get200ApplicationJsonResponse": "fLiftDisruptionsArray",
+        "Get200ApplicationJsonResponse": "LiftDisruptionsArray",
     },
     "Journey": {
         "Tfl": "Tfl.Api.Presentation.Entities.Mode",
