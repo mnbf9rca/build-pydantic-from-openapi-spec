@@ -929,6 +929,43 @@ def map_deduplicated_name(type_name: str, reference_map: Dict[str, str]) -> str:
         return reference_map[type_name]
     return type_name
 
+def update_specs_with_model_changes(specs: List[Dict[str, Any]], combined_components: Dict[str, Any], reference_map: Dict[str, str]) -> List[Dict[str, Any]]:
+    updated_specs = []
+    for spec in specs:
+        updated_spec = spec.copy()
+        if "components" in updated_spec and "schemas" in updated_spec["components"]:
+            updated_schemas = {}
+            for schema_name, schema in updated_spec["components"]["schemas"].items():
+                sanitized_name = sanitize_name(schema_name)
+                if sanitized_name in reference_map:
+                    new_name = reference_map[sanitized_name]
+                    updated_schemas[new_name] = combined_components[new_name]
+                else:
+                    updated_schemas[sanitized_name] = schema
+            updated_spec["components"]["schemas"] = updated_schemas
+        
+        # Update references in paths
+        if "paths" in updated_spec:
+            for path in updated_spec["paths"].values():
+                for method in path.values():
+                    if "responses" in method:
+                        for response in method["responses"].values():
+                            if "content" in response and "application/json" in response["content"]:
+                                schema = response["content"]["application/json"].get("schema", {})
+                                if "$ref" in schema:
+                                    ref = schema["$ref"].split("/")[-1]
+                                    sanitized_ref = sanitize_name(ref)
+                                    if sanitized_ref in reference_map:
+                                        schema["$ref"] = f"#/components/schemas/{reference_map[sanitized_ref]}"
+                                elif schema.get("type") == "array" and "$ref" in schema.get("items", {}):
+                                    ref = schema["items"]["$ref"].split("/")[-1]
+                                    sanitized_ref = sanitize_name(ref)
+                                    if sanitized_ref in reference_map:
+                                        schema["items"]["$ref"] = f"#/components/schemas/{reference_map[sanitized_ref]}"
+        
+        updated_specs.append(updated_spec)
+    return updated_specs
+
 # Main function
 def main(spec_path: str, output_path: str):
     os.makedirs(output_path, exist_ok=True)
@@ -965,7 +1002,10 @@ def main(spec_path: str, output_path: str):
     # Create config and class
     logging.info("Creating config and class files...")
     base_url = "https://api.tfl.gov.uk"
-    save_classes(specs, output_path, reference_map, base_url)
+    logging.info("Updating specs with model changes...")
+    updated_specs = update_specs_with_model_changes(specs, combined_components, reference_map)
+
+    save_classes(updated_specs, output_path, reference_map, base_url)
     
     logging.info("Creating Mermaid class diagram...")
     create_mermaid_class_diagram(dependency_graph, sorted_models, os.path.join(output_path, "class_diagram.mmd"))
