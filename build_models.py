@@ -586,11 +586,12 @@ def handle_dependencies(models: Dict[str, Type[BaseModel]]):
 def topological_sort(graph: Dict[str, Set[str]]) -> List[str]:
     # Exclude Python built-in types from the graph
     built_in_types = get_builtin_types()
+    sorted_graph = sorted(graph)
 
     # Filter out built-in types from the graph
-    in_degree = {model: 0 for model in sorted(graph) if model not in built_in_types}
+    in_degree = {model: 0 for model in sorted_graph if model not in built_in_types}
 
-    for model in sorted(graph):
+    for model in sorted_graph:
         if model in built_in_types:
             continue  # Skip built-in types
 
