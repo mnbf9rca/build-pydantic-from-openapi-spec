@@ -1,9 +1,11 @@
 import json
 import os
+import sys
 import logging
 import re
 import keyword
 import builtins
+import argparse
 from urllib.parse import urljoin
 
 from typing import __all__ as typing_all
@@ -1066,4 +1068,10 @@ def main(spec_path: str, output_path: str):
 
 
 if __name__ == "__main__":
-    main("OpenAPI_specs/", "app/")
+    parser = argparse.ArgumentParser(description="Process OpenAPI spec and generate output.")
+    parser.add_argument("specpath", help="Path to the OpenAPI specification file")
+    parser.add_argument("output", help="Path to the output file")
+
+    args = parser.parse_args()
+
+    main(args.specpath, args.output)
